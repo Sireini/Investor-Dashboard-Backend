@@ -17,9 +17,9 @@ module.exports = function (app) {
             method: "GET",
             url:
             // "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
-            "sandbox-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
+            "https://sandbox-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
             headers: {
-                "X-CMC_PRO_API_KEY": apiKey,
+                "X-CMC_PRO_API_KEY": testKey,
                 "Content-Type": "application/json",
             },
             qs: queryParams

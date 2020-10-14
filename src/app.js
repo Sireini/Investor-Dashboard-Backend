@@ -1,7 +1,12 @@
 const express = require('express')
 require('./db/mongoose.connect') // Connect to DB
 
+
+const verifyToken = require("./auth/VerifyToken").VerifyToken;
+
 const demoRouter = require('./routers/demo.router');
+
+let userController = require('./controllers/User.controller');
 let CoinMarketCapController = require('./controllers/Coinmarketcap.controller');
 
 const app = express();
@@ -20,15 +25,15 @@ app.use("/*", (req, res, next) => {
         status: 500,
         data: null,
         message: err,
-        token: "",
+        accessToken: "",
       });
     };
   
-    res.success = (data, msg = "") => {
+    res.success = (data, accessToken = "", msg = "") => {
       return res.status(200).json({
         status: 200,
         data: data,
-        token: "",
+        accessToken: accessToken,
         message: msg,
       });
     };
@@ -40,12 +45,14 @@ app.use("/*", (req, res, next) => {
           "Je sessie is verlopen en bent automatisch uitgelogd. Log opnieuw in.",
         status: 401,
         data: null,
-        token: token,
+        accessToken: accessToken,
       });
     };
   
     next();
-  });
+});
+
+userController(app, verifyToken);
 
 CoinMarketCapController(app);
 
