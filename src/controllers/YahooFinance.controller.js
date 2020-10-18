@@ -9,30 +9,27 @@ module.exports = function (app, VerifyToken) {
    * @Get list of cryptocurrencies
    */
   app.get(
-    "/api/coinmarketcap/cryptocurrency/listings",
+    "/api/yahoofinance/search/:searchTerm",
     VerifyToken,
     async (req, res, next) => {
       try {
-        const queryParams = url.parse(req.url,true).query;
+        const searchTerm = req.params.searchTerm
         let options = {
             method: "GET",
             url:
-            // "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
-            "https://sandbox-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
+            "https://finance.yahoo.com/_finance_doubledown/api/resource/searchassist;searchTerm=" + searchTerm,
             headers: {
-                "X-CMC_PRO_API_KEY": testKey,
                 "Content-Type": "application/json",
             },
-            qs: queryParams
         };
 
-        let cryptoList = await makeRequest(options);
+        let searchResult = await makeRequest(options);
 
-        if(!cryptoList) {
+        if(!searchResult) {
             return res.error('Unable to get cryptocurrency list');
         }
 
-        return res.success(cryptoList);
+        return res.success(searchResult);
       } catch (e) {
         console.error(e);
         return res.error(e);

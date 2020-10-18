@@ -8,11 +8,15 @@ const demoRouter = require('./routers/demo.router');
 
 let userController = require('./controllers/User.controller');
 let CoinMarketCapController = require('./controllers/Coinmarketcap.controller');
+let AlphavantageController = require('./controllers/Alphavantage.controller');
+let YahooFinanceController = require('./controllers/YahooFinance.controller');
+let TransactionController = require('./controllers/Transaction.controller');
 
 const app = express();
 
 // TO DO DELETE
-var cors = require('cors')
+var cors = require('cors');
+const { VerifyToken } = require('./auth/VerifyToken');
 app.use(cors());
 
 
@@ -54,6 +58,9 @@ app.use("/*", (req, res, next) => {
 
 userController(app, verifyToken);
 
-CoinMarketCapController(app);
+CoinMarketCapController(app, verifyToken);
+AlphavantageController(app, verifyToken);
+YahooFinanceController(app, VerifyToken);
+TransactionController(app, VerifyToken);
 
 module.exports = app

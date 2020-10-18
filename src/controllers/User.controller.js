@@ -1,5 +1,3 @@
-const { VerifyToken } = require('../auth/VerifyToken');
-
 module.exports = function (
     app,
     VerifyToken
@@ -71,8 +69,8 @@ module.exports = function (
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             email: req.body.email,
-            CreatedDate: new Date(),
-            ModifiedDate: new Date(),
+            created_date: new Date(),
+            modified_date: new Date(),
         });
 
         if (hashedPasswordUsed) {
