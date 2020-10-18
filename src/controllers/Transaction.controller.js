@@ -39,16 +39,16 @@ module.exports = function (
   app.get("/api/transaction/list", VerifyToken, async (req, res) => {
     try {
         let userId = req.userId;
-        let user = await Transaction.find({user_id: userId})
+        let userOrders = await Transaction.find({user_id: userId})
             .limit(5)
             .lean()
             .exec();
 
-        if(!user) {
+        if(!userOrders) {
             return res.error('Unable to find user.')
         }
 
-        return res.success(user);
+        return res.success(userOrders);
     } catch (error) {
         console.log(error)
         res.error("Something went wrong!");        

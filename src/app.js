@@ -1,9 +1,7 @@
 const express = require('express')
 require('./db/mongoose.connect') // Connect to DB
 
-
-const verifyToken = require("./auth/VerifyToken").VerifyToken;
-
+const VerifyToken = require('./auth/VerifyToken').VerifyToken;
 const demoRouter = require('./routers/demo.router');
 
 let userController = require('./controllers/User.controller');
@@ -11,12 +9,13 @@ let CoinMarketCapController = require('./controllers/Coinmarketcap.controller');
 let AlphavantageController = require('./controllers/Alphavantage.controller');
 let YahooFinanceController = require('./controllers/YahooFinance.controller');
 let TransactionController = require('./controllers/Transaction.controller');
+let PortfolioController = require('./controllers/Portfolio.controller.');
 
 const app = express();
 
+
 // TO DO DELETE
 var cors = require('cors');
-const { VerifyToken } = require('./auth/VerifyToken');
 app.use(cors());
 
 
@@ -56,11 +55,11 @@ app.use("/*", (req, res, next) => {
     next();
 });
 
-userController(app, verifyToken);
-
-CoinMarketCapController(app, verifyToken);
-AlphavantageController(app, verifyToken);
+userController(app, VerifyToken);
+CoinMarketCapController(app, VerifyToken);
+AlphavantageController(app, VerifyToken);
 YahooFinanceController(app, VerifyToken);
 TransactionController(app, VerifyToken);
+PortfolioController(app, VerifyToken);
 
 module.exports = app
