@@ -40,7 +40,7 @@ module.exports = function (
     try {
         let userId = req.userId;
         let userOrders = await Transaction.find({user_id: userId})
-            .limit(5)
+            .limit(4)
             .lean()
             .exec();
 
