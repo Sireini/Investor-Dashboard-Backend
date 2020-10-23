@@ -33,19 +33,19 @@ module.exports = function (
                 if(order.asset_category === 'ETF' || order.asset_category === 'Equity') {
                     let stock = response[0];
 
-                    // let latestStockPrice = await AlphavantageController.getLatestStockPrice(order.symbol);
-                    // let changePercentage = latestStockPrice['Global Quote']['10. change percent'];
-                    // changePercentage = changePercentage.replace('%', '');
+                    let latestStockPrice = await AlphavantageController.getLatestStockPrice(order.symbol);
+                    let changePercentage = latestStockPrice['Global Quote']['10. change percent'];
+                    changePercentage = changePercentage.replace('%', '');
 
-                    // stock.total_avg_value += order.price * order.amount;
-                    // stock.current_total_avg_value += Number(latestStockPrice['Global Quote']['05. price']) * order.amount;
-                    // stock.total_assets += 1;
-                    // stock.change_percentage = (stock.current_total_avg_value - stock.total_avg_value) / stock.total_avg_value * 100
+                    stock.total_avg_value += order.price * order.amount;
+                    stock.current_total_avg_value += Number(latestStockPrice['Global Quote']['05. price']) * order.amount;
+                    stock.total_assets += 1;
+                    stock.change_percentage = (stock.current_total_avg_value - stock.total_avg_value) / stock.total_avg_value * 100
 
-                    // // stock.current_total_avg_value.toFixed(2);
-                    // // order.change_percentage = changePercentage;
+                    // stock.current_total_avg_value.toFixed(2);
+                    // order.change_percentage = changePercentage;
 
-                    // stock.assets.push(order);
+                    stock.assets.push(order);
                 }
 
                 if(order.asset_category === 'Crypto') {
@@ -94,12 +94,14 @@ module.exports = function (
             res.error("Something went wrong!");        
         }
     });
-
   
     app.get("/api/portfolio/balance/:period", VerifyToken, async (req, res) => {
         try {
             const period = req.params.period;
             let userId = req.userId;
+            let assetData = [];
+            let dates = [];
+
             let userOrders = await Transaction.find({user_id: userId})
                 .lean()
                 .exec();
@@ -108,17 +110,6 @@ module.exports = function (
                 return res.error('Unable to find user.')
             }
 
-            let response = [];
-
-            let asset = {
-                total_avg_value: 0,
-                current_total_avg_value: 0,
-                change_percentage: 0
-            };
-
-            let monthlyLabes = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-            ];
 
             for (const order of userOrders) {
                 //@TO DO Handle all other assets.
@@ -128,101 +119,120 @@ module.exports = function (
                     //@TO DO do not get double stock data.
                     let monthlyPrices = await AlphavantageController.getMonthlyPrices(order.symbol);
                     
-                    asset.total_avg_value += order.price * order.amount;
+                    let total_avg_value = 0;
+                    total_avg_value += order.price * order.amount;
 
                     const filtered = Object.keys(monthlyPrices['Monthly Time Series'])
                         .filter(key => key.startsWith('2020'))
                         .reduce((obj, key) => {
                             obj[key] = monthlyPrices['Monthly Time Series'][key];
+                            
+                            if(!dates.includes(key)){
+                                dates.push(key)
+                            }
+                            
                             obj[key].current_total_avg_value = 0;
                             obj[key].change_percentage = 0;
                             obj[key].change_value = 0;
                             obj[key].price = 0;
+                            obj[key].amount = 0;
 
-                            obj[key].total_avg_value = asset.total_avg_value;
-                            obj[key].current_total_avg_value += Number(obj[key]['4. close']) * order.amount;
-                            obj[key].change_percentage = (obj[key].current_total_avg_value - asset.total_avg_value) / asset.total_avg_value * 100;
-
-                            obj[key].change_value = obj[key].current_total_avg_value - asset.total_avg_value;
+                            obj[key].total_avg_value = total_avg_value;
                             obj[key].price = Number(obj[key]['4. close']);
+                            obj[key].current_total_avg_value += obj[key].price * order.amount;
+                            obj[key].change_percentage = (obj[key].current_total_avg_value - total_avg_value) / total_avg_value * 100;
+
+                            obj[key].change_value = obj[key].current_total_avg_value - total_avg_value;
+                            obj[key].amount = order.amount;
                             
                             return obj;
                         }, {});
 
-
-                    // asset.current_total_avg_value += Number(monthlyPrices['Monthly Time Series']['2020-09-30']['4. close']) * order.amount;
-                    // asset.change_percentage = (asset.current_total_avg_value - asset.total_avg_value) / asset.total_avg_value * 100;
-
-                    // console.log(monthlyPrices);
-                    response.push({ [order.symbol]: filtered});
-
-                    response.forEach(asset => {
-                        console.log('Order symbol', order.symbol,  asset[order.symbol])
-                    })
-                    // console.log('asset', order, asset)
-
-                    // TO DO 
-                    // 1. Compare buy price with current market price.
-                    // 2. Add filters: Daily, Weekly, Monthly
-
-                    // Portfolio balance = All transactions plus or minus differentiation current price.
-
-                    // Monthly labels: [Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sept, Oct, Nov, Dec]
-                    // Monthly data: [0, 0, 1000, 1100, etc..]
-
-                    // How do we get monthly data?
-                    // For each transaction/asset we have to get monthly average prices
-                    // Than we compare our buy price with the monthly averages
-                    // We add up the amount and divide it by the number of stocks
-
-
+                    assetData.push({ [order.symbol]: filtered });
                 }
             };
+    
+            let response = [];
 
+            for (let date of dates){
+                // Monthly for everything
+                let total_avg_value = 0;
+                let total_change_value = 0;
 
-            // console.log(userOrders);
+                // For all dates
+                for (let data of assetData){
+                    let companyTicker = (Object.keys(data)[0]);
 
-            return res.success(response);
+                    // For all companies
+                    if(data[companyTicker] !== undefined){
+                        let month = data[companyTicker][date];
+
+                        total_avg_value += parseFloat(month.total_avg_value);
+                        total_change_value += parseFloat(month.change_value);
+                    }
+                }
+                
+                response.push({
+                    month: new Date(date).toLocaleString("en-us", { month  : "long" }), 
+                    total_avg_value: total_avg_value, 
+                    total_change_value: total_change_value,                    
+                    total_change_percentage: (total_change_value / total_avg_value) * 100,
+                    total_portfolio_balance: total_avg_value + total_change_value
+                });
+            }
+
+            return res.success({labels: dates.map(d => new Date(d).toLocaleString("en-us", { month : "long" })).reverse(), value: response.reverse() });
         } catch (error) {
             console.log(error)
             res.error("Something went wrong!");        
         }
     });
 
-    var calculateWeightedAverage = (assets) => {
-        console.log('assets', assets);
+    
+  
+    app.get("/api/portfolio/assets/:number", VerifyToken, async (req, res) => {
+        try {
+            let userId = req.userId;
+            let numberOfAssets = Number(req.params.number);
+
+            if(numberOfAssets > 5) {
+                return res.error();
+            }
+
+            let biggestHoldings = await Transaction.find({user_id: userId})
+                .sort({transaction_value: -1})
+                .limit(numberOfAssets)
+                .lean()
+                .exec();
+
+            if(!biggestHoldings) {
+                return res.error('Unable to find user.')
+            }
+
+            return res.success(biggestHoldings);
+        } catch (error) {
+            console.log(error)
+            res.error("Something went wrong!");        
+        }
+    });
+
+    var calculateWeightedAverage = (data) => {
         let totalWeightedDecimals = 0;
         let totalAmounts = 0;
 
-        assets.forEach(asset => {
+        data.forEach(asset => {
             if(!asset.change_percentage) {
                 return;
             }
 
             let decimal = asset.change_percentage / 100;
             let weightedDecimal = decimal * asset.amount;
-            console.log('weightedDecimal', decimal, asset.amount, weightedDecimal);
 
             totalWeightedDecimals += weightedDecimal;
-            console.log('totalWeightedDecimals', totalWeightedDecimals);
-
             totalAmounts += asset.amount;
         });
 
-        console.log(totalWeightedDecimals, totalAmounts);
         return totalWeightedDecimals / totalAmounts * 100;
-        // 1) GLD amount: 2 - (0.0505%)
-        // 2) MSFT amount: 11 - (-2.4766%)
-        // 3) AAPL amount: 11 - (-2.5542%)
-
-        // 2. 0.000505 * 2 = 0.00101
-        //    -0.024766 * 11 = -0.272426
-        //    -0.025542 * 11 = -0.280962
-
-        // 3. 0.00101 + -0.272426 + -0.280962 = -0.552378
-        // 4. 2 + 11 + 11 = 24
-        // 5. -0.552378 / 24 = -0.02301575 * 100 = -2.301575 %
-
     }
 
 }

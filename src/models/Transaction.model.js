@@ -9,6 +9,7 @@ const transactionSchema = new Schema({
   symbol: {type: String},
   price: { type: Number },
   amount: { type: Number },
+  transaction_value: { type: Number },
   transaction_type: { type: String },
   transaction_date: { type: Date }
 });

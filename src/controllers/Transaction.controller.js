@@ -16,6 +16,7 @@ module.exports = function (
             symbol: req.body.symbol,
             price: req.body.price,
             amount: req.body.amount,
+            transaction_value: req.body.price * req.body.amount,
             transaction_type: req.body.transaction_type,
             transaction_date: req.body.transaction_date,
             created_date: new Date(),
