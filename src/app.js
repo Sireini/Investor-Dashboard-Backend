@@ -1,22 +1,23 @@
 const express = require('express')
 require('./db/mongoose.connect') // Connect to DB
 
-const VerifyToken = require('./auth/VerifyToken').VerifyToken;
 const demoRouter = require('./routers/demo.router');
+const VerifyToken = require('./auth/VerifyToken').VerifyToken;
 
-let userController = require('./controllers/User.controller');
-let CoinMarketCapController = require('./controllers/Coinmarketcap.controller');
-let AlphavantageController = require('./controllers/Alphavantage.controller');
-let YahooFinanceController = require('./controllers/YahooFinance.controller');
-let TransactionController = require('./controllers/Transaction.controller');
-let PortfolioController = require('./controllers/Portfolio.controller.');
+const UserController = require('./controllers/User.controller');
+const CoinMarketCapController = require('./controllers/Coinmarketcap.controller');
+const AlphavantageController = require('./controllers/Alphavantage.controller');
+const YahooFinanceController = require('./controllers/YahooFinance.controller');
+const TransactionController = require('./controllers/Transaction.controller');
+const PortfolioController = require('./controllers/Portfolio.controller');
+const WatchlistController = require('./controllers/Watchlist.controller');
 
 const app = express();
-
 
 // TO DO DELETE
 var cors = require('cors');
 app.use(cors());
+// ------------ 
 
 
 app.use(express.json())
@@ -55,11 +56,12 @@ app.use("/*", (req, res, next) => {
     next();
 });
 
-userController(app, VerifyToken);
+UserController(app, VerifyToken);
 CoinMarketCapController(app, VerifyToken);
 AlphavantageController(app, VerifyToken);
 YahooFinanceController(app, VerifyToken);
 TransactionController(app, VerifyToken);
 PortfolioController(app, VerifyToken);
+WatchlistController(app, VerifyToken);
 
 module.exports = app

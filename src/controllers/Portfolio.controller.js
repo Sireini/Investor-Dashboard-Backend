@@ -1,4 +1,6 @@
+const moment = require('moment')
 const CoinmarketcapController = require('./Coinmarketcap.controller');
+const yahooFinance = require('yahoo-finance');
 
 module.exports = function (
     app,
@@ -33,19 +35,25 @@ module.exports = function (
                 if(order.asset_category === 'ETF' || order.asset_category === 'Equity') {
                     let stock = response[0];
 
-                    let latestStockPrice = await AlphavantageController.getLatestStockPrice(order.symbol);
-                    let changePercentage = latestStockPrice['Global Quote']['10. change percent'];
-                    changePercentage = changePercentage.replace('%', '');
+                    // let latestStockPrice = await AlphavantageController.getLatestStockPrice(order.symbol);
+                    
+                    // if(latestStockPrice.Information) {
+                    //     // @TO DO res.success or res.error
+                    //     // return;
+                    // }
 
-                    stock.total_avg_value += order.price * order.amount;
-                    stock.current_total_avg_value += Number(latestStockPrice['Global Quote']['05. price']) * order.amount;
-                    stock.total_assets += 1;
-                    stock.change_percentage = (stock.current_total_avg_value - stock.total_avg_value) / stock.total_avg_value * 100
+                    // let changePercentage = latestStockPrice['Global Quote']['10. change percent'];
+                    // changePercentage = changePercentage.replace('%', '');
 
-                    // stock.current_total_avg_value.toFixed(2);
-                    // order.change_percentage = changePercentage;
+                    // stock.total_avg_value += order.price * order.amount;
+                    // stock.current_total_avg_value += Number(latestStockPrice['Global Quote']['05. price']) * order.amount;
+                    // stock.total_assets += 1;
+                    // stock.change_percentage = (stock.current_total_avg_value - stock.total_avg_value) / stock.total_avg_value * 100
 
-                    stock.assets.push(order);
+                    // // stock.current_total_avg_value.toFixed(2);
+                    // // order.change_percentage = changePercentage;
+
+                    // stock.assets.push(order);
                 }
 
                 if(order.asset_category === 'Crypto') {
@@ -99,17 +107,45 @@ module.exports = function (
         try {
             const period = req.params.period;
             let userId = req.userId;
+
             let assetData = [];
             let dates = [];
 
-            let userOrders = await Transaction.find({user_id: userId})
+            let query = { user_id: userId };
+
+            // if(period === 'year' || period === 'ytd') {
+            //     query.transaction_date = await determinePortfolioBalanceQuery(period);
+            // }
+
+            console.log(query)
+
+            let userOrders = await Transaction.find(query)
                 .lean()
                 .exec();
+
+            // console.log(userOrders);
 
             if(!userOrders) {
                 return res.error('Unable to find user.')
             }
+            
 
+            // const symbols = [];
+            
+            // for (const order of userOrders) {
+            //     symbols.push(order.symbol);
+            // }
+
+            // console.log(symbols);
+
+            // const test = yahooFinance.historical({
+            //     symbols: [ 'GLD', 'MSFT', 'AAPL', 'BTC', 'GOLD' ],
+            //     // from: '2012-01-01',
+            //     // to: '2012-12-31'
+            // }, (err, quotes) => {
+
+            //     console.log(quotes);
+            // });
 
             for (const order of userOrders) {
                 //@TO DO Handle all other assets.
@@ -117,40 +153,61 @@ module.exports = function (
                 if(order.asset_category === 'Equity' || order.asset_category === 'ETF') {
                     //@TO DO get current price of the stock user has bought.
                     //@TO DO do not get double stock data.
-                    let monthlyPrices = await AlphavantageController.getMonthlyPrices(order.symbol);
+                    let outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
+                    let dailyPrices = await AlphavantageController.getDailyPrices(order.symbol, outputSize);
+                    
+                    // console.log('dailyPrices', dailyPrices);
+                    // console.log('dailyPrices["Time Series (Daily)"]', order.symbol, dailyPrices['Time Series (Daily)']);
+                    // console.log("Object.keys(dailyPrices['Time Series (Daily)']).length", Object.keys(dailyPrices['Time Series (Daily)']).length);
+
+                    if(!dailyPrices['Time Series (Daily)']) {
+                        return;
+                    }
                     
                     let total_avg_value = 0;
                     total_avg_value += order.price * order.amount;
 
-                    const filtered = Object.keys(monthlyPrices['Monthly Time Series'])
-                        .filter(key => key.startsWith('2020'))
+                    const today = moment().startOf('day');
+                    const $gte = period !== 'ytd' ? moment(today).subtract(1, period +'s') : moment().startOf('year');
+                    
+                    console.log(order, total_avg_value);
+
+                    const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
+                        // .filter(key => key >= moment(query.transaction_date['$gte']).format('YYYY-MM-DD') && key <= moment(query.transaction_date['$lte']).format('YYYY-MM-DD'))
+                        .filter(key => key >= $gte.format('YYYY-MM-DD') && key <= today.format('YYYY-MM-DD'))
                         .reduce((obj, key) => {
-                            obj[key] = monthlyPrices['Monthly Time Series'][key];
-                            
+                            obj[key] = dailyPrices['Time Series (Daily)'][key];
+
                             if(!dates.includes(key)){
-                                dates.push(key)
+                                dates.push(key);
                             }
-                            
+
+                            obj[key].total_avg_value = 0;
                             obj[key].current_total_avg_value = 0;
                             obj[key].change_percentage = 0;
                             obj[key].change_value = 0;
                             obj[key].price = 0;
                             obj[key].amount = 0;
 
-                            obj[key].total_avg_value = total_avg_value;
-                            obj[key].price = Number(obj[key]['4. close']);
-                            obj[key].current_total_avg_value += obj[key].price * order.amount;
-                            obj[key].change_percentage = (obj[key].current_total_avg_value - total_avg_value) / total_avg_value * 100;
-
-                            obj[key].change_value = obj[key].current_total_avg_value - total_avg_value;
-                            obj[key].amount = order.amount;
+                            
+                            if(key >= moment(order.transaction_date).format('YYYY-MM-DD')) {    
+                                obj[key].total_avg_value = total_avg_value;
+                                obj[key].price = Number(obj[key]['4. close']);
+                                obj[key].current_total_avg_value += obj[key].price * order.amount;
+                                obj[key].change_percentage = (obj[key].current_total_avg_value - total_avg_value) / total_avg_value * 100;
+    
+                                obj[key].change_value = obj[key].current_total_avg_value - total_avg_value;
+                                obj[key].amount = order.amount;
+                            }
                             
                             return obj;
                         }, {});
 
-                    assetData.push({ [order.symbol]: filtered });
+                        assetData.push({ [order.symbol]: filtered });
                 }
             };
+
+            console.log(dates)
     
             let response = [];
 
@@ -166,14 +223,13 @@ module.exports = function (
                     // For all companies
                     if(data[companyTicker] !== undefined){
                         let month = data[companyTicker][date];
-
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
                     }
                 }
                 
                 response.push({
-                    month: new Date(date).toLocaleString("en-us", { month  : "long" }), 
+                    date: new Date(date).toLocaleString("en-us", { year:'numeric', month: 'short', day : "2-digit" }), 
                     total_avg_value: total_avg_value, 
                     total_change_value: total_change_value,                    
                     total_change_percentage: (total_change_value / total_avg_value) * 100,
@@ -181,14 +237,12 @@ module.exports = function (
                 });
             }
 
-            return res.success({labels: dates.map(d => new Date(d).toLocaleString("en-us", { month : "long" })).reverse(), value: response.reverse() });
+            return res.success({labels: dates.map(d => new Date(d).toLocaleString("en-us", { year:'numeric', month: 'short', day : "2-digit" })).reverse(), value: response.reverse() });
         } catch (error) {
             console.log(error)
             res.error("Something went wrong!");        
         }
     });
-
-    
   
     app.get("/api/portfolio/assets/:number", VerifyToken, async (req, res) => {
         try {
@@ -215,6 +269,43 @@ module.exports = function (
             res.error("Something went wrong!");        
         }
     });
+
+    var yahooFinanceFilter = async (period) => {
+        // {
+        //     symbols: [ 'GLD', 'MSFT', 'AAPL', 'BTC', 'GOLD' ],
+        //     from: '2012-01-01',
+        //     to: '2012-12-31'
+        // }
+        // const today = moment().startOf('day');
+
+        // switch (period) {
+        //     case 'week':
+        //         return  { "$gte": today.toDate(), "$lt": moment(today).add(7, 'days').toDate() };
+        //     case 'mtd':
+        //         return  { "$gte": moment(today).substract(1, 'months').toDate(), "$lte": today.toDate()};
+        //     case 'month':
+        //         return  { "$gte": today.toDate(), "$lte": moment(today).add(7, 'days').toDate() };
+        //     case 'year':
+        //         return  { "$gte": today.toDate(), "$lt": moment(today).substract(1, 'years').toDate() };
+        // }
+    }
+
+    var determinePortfolioBalanceQuery = async (period) => {
+        const today = moment().startOf('day');
+
+        switch (period) {
+            // case 'week':
+            //     return  { "$gte": moment(today).subtract(1, 'weeks').toDate(), "$lte": today.toDate()};
+            // case 'month':
+            //     return  { "$gte": moment(today).subtract(1, 'months').toDate(), "$lte": today.toDate() };
+            // case 'month':
+            //     return  { "$gte": today.toDate(), "$lt": moment(today).add(7, 'days').toDate() };
+            case 'year':
+                return  { "$gte": moment(today).subtract(1, 'years').toDate(), "$lte": today.toDate() };                
+            case 'ytd':
+                return  { "$gte": moment().startOf('year').toDate(), "$lte": today.toDate() };
+        }
+    }
 
     var calculateWeightedAverage = (data) => {
         let totalWeightedDecimals = 0;
