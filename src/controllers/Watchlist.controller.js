@@ -47,4 +47,29 @@ module.exports = function (
             res.error("Something went wrong!");        
         }
     });
+
+    app.delete(
+        "/api/watchlist/:id",
+        VerifyToken,
+        async (req, res) => {
+          try {
+            const watchlistId = req.params.id;
+            const userId = req.userId;
+    
+            const deletedAsset = await Watchlist.findOneAndDelete({
+              _id: watchlistId,
+              user_id: userId,
+            });
+    
+            if (!deletedAsset) {
+              return res.error("Failed to delete the restaurant from favourites");
+            };
+    
+            return res.success(deletedAsset);
+          } catch (e) {
+            console.log("Error: ", e);
+            res.error("Something went wrong!");
+          }
+        }
+    );
 }
