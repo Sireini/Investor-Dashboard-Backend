@@ -1,5 +1,6 @@
 
 const url = require('url');
+const yahooFinance = require('yahoo-finance');
 
 module.exports = function (app, VerifyToken) {
     let apiKey = 'c29aa17f-9dec-4a8f-90a3-f28e6d38d765';
@@ -37,21 +38,35 @@ module.exports = function (app, VerifyToken) {
     }
   );
 };
+ 
+module.exports.getLatestStockPrice = async (ticker) => {
+  if (!ticker) {
+    return null;
+  }
+
+  return await yahooFinance.quote({symbol: ticker, modules: ['price']})
+    .then((res) => res)
+    .catch((err) => {
+        // Handle the error
+        console.log(err);
+        return res.error(e);
+    });
+};
 
 var makeRequest = (options) => {
-    let request = require("request");
-    return new Promise((resolve, reject) => {
-      request(options, function (error, response, body) {
-        if (!error && body) {
-          let bodyRes = JSON.parse(body);
-          if (response.statusCode >= 200 && response.statusCode <= 299) {
-            resolve(bodyRes);
-          } else {
-            reject(bodyRes.error || bodyRes.detail);
-          }
+  let request = require("request");
+  return new Promise((resolve, reject) => {
+    request(options, function (error, response, body) {
+      if (!error && body) {
+        let bodyRes = JSON.parse(body);
+        if (response.statusCode >= 200 && response.statusCode <= 299) {
+          resolve(bodyRes);
         } else {
-          reject(error);
+          reject(bodyRes.error || bodyRes.detail);
         }
-      });
+      } else {
+        reject(error);
+      }
     });
-  };
+  });
+};

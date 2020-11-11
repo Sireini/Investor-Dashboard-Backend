@@ -22,7 +22,7 @@ module.exports.VerifyToken = (req, res, next) => {
     (err) => {
       return res.status(401).send({
         auth: false,
-        message: "Je bent niet geautoriseerd voor deze actie.",
+        message: "You are not authorized for this action.",
         status: 401,
         data: null,
         accessToken: accessToken,

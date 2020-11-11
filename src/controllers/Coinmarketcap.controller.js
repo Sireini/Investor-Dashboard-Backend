@@ -52,18 +52,18 @@ module.exports.getLatestCryptoPrice = async (queryParams) => {
   
   let options = {
     method: "GET",
-    url:
-    // "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
-    "https://sandbox-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest",
+    uri:
+    "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest",
+    // "https://sandbox-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest",
     headers: {
-        "X-CMC_PRO_API_KEY": testKey,
+        "X-CMC_PRO_API_KEY": apiKey,
         "Content-Type": "application/json",
     },
     qs: queryParams
   };
 
   let cryptoList = await makeRequest(options);
-
+  
   if(!cryptoList) {
       return res.error('Unable to get cryptocurrency list');
   }

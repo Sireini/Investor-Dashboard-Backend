@@ -1,14 +1,15 @@
-const moment = require('moment')
-const CoinmarketcapController = require('./Coinmarketcap.controller');
-const yahooFinance = require('yahoo-finance');
+
 
 module.exports = function (
     app,
     VerifyToken
   ) {    
     const mongoose = require("mongoose");
+    const moment = require('moment');
+    const CoinmarketcapController = require('./Coinmarketcap.controller');
     const Transaction = require("../models/Transaction.model");
     const AlphavantageController = require("./Alphavantage.controller");
+    const YahooFinanceController = require("./YahooFinance.controller");
 
     app.get("/api/portfolio/asset-allocation", VerifyToken, async (req, res) => {
         try {
@@ -21,82 +22,85 @@ module.exports = function (
                 return res.error('Unable to find user.')
             }
 
-            // Check if this is the correct way to set static categories..
-            let response = [
-                { name: 'Stocks', type: 'stocks', icon_url_path: 'Shopping/Chart-line1.svg', total_assets: 0, change_percentage: 0, total_avg_value: 0, current_total_avg_value: 0, assets: [] },
-                { name: 'Crypto', type: 'crypto', icon_url_path: 'Shopping/Bitcoin.svg', total_assets: 0, change_percentage: 0, total_avg_value: 0, current_total_avg_value: 0, assets: [] },
-                { name: 'Commodities', type: 'commodities', icon_url_path: 'Design/Sketch.svg', total_assets: 0, change_percentage: 0, total_avg_value: 0, current_total_avg_value: 0, assets: [] },
-                { name: 'Real Estate', type: 'real-estate', icon_url_path: 'Home/Building.svg', total_assets: 0, change_percentage: 0, total_avg_value: 0, current_total_avg_value: 0, assets: [] }
-            ]
+            let assets = [];
 
-            //@TO DO Create dynamic categories only combine ETF & Equity
-            
             for (const order of userOrders) {
-                if(order.asset_category === 'ETF' || order.asset_category === 'Equity') {
-                    let stock = response[0];
+                const index = assets.findIndex(item => item.name === order.asset_category);
+                
+                if(index < 0){
+                    assets.push({ 
+                        name: order.asset_category,
+                        type: order.asset_category.toLowerCase(),
+                        total_assets: 0,
+                        change_percentage: 0,
+                        total_avg_value: 0,
+                        current_total_avg_value: 0,
+                        assets: []
+                    });
+                };
 
-                    // let latestStockPrice = await AlphavantageController.getLatestStockPrice(order.symbol);
-                    
-                    // if(latestStockPrice.Information) {
-                    //     // @TO DO res.success or res.error
-                    //     // return;
-                    // }
-
-                    // let changePercentage = latestStockPrice['Global Quote']['10. change percent'];
-                    // changePercentage = changePercentage.replace('%', '');
-
-                    // stock.total_avg_value += order.price * order.amount;
-                    // stock.current_total_avg_value += Number(latestStockPrice['Global Quote']['05. price']) * order.amount;
-                    // stock.total_assets += 1;
-                    // stock.change_percentage = (stock.current_total_avg_value - stock.total_avg_value) / stock.total_avg_value * 100
-
-                    // // stock.current_total_avg_value.toFixed(2);
-                    // // order.change_percentage = changePercentage;
-
-                    // stock.assets.push(order);
-                }
+                const indexNew = assets.findIndex(item => item.name === order.asset_category);
 
                 if(order.asset_category === 'Crypto') {
-                    let crypto = response[1]
-                    let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
-                    let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
+                    if(indexNew >= 0) {
+                        let crypto = assets[indexNew];
+                        let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
+                        let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
 
-                    crypto.total_avg_value += order.price * order.amount;                    
-                    crypto.current_total_avg_value += Number(quote.price) * order.amount;
-                    crypto.total_assets += 1;
-                    crypto.change_percentage = (crypto.current_total_avg_value - crypto.total_avg_value) / crypto.total_avg_value * 100
-                    crypto.assets.push(order);
-                }
-
-                if(order.asset_category === 'Commodity') {             
-
-                    // @TO DO Search for good api for commodities
-                    // 1. https://www.goldapi.io/api/XAU/USD/20201021
-                    // 2. http://www.quandl.com/api/v3/datasets/LBMA/GOLD/data.json?start_date=2020-10-20&end_date=2020-10-21&api_key=yVQuad2-hSXdEpfrxXz4
-                    // 3. 
-                    // let latestStockPrice = await AlphavantageController.getLatestStockPrice(order.symbol);
-
-                    response[2].total_avg_value += order.price * order.amount;
-                    // response[2].current_total_avg_value += Number(latestStockPrice['Global Quote']['05. price']) * order.amount;
-
-                    if(response[2].assets.length < 4) {
-                        response[2].assets.push(order);
+                        crypto.total_avg_value += order.price * order.amount;                    
+                        crypto.current_total_avg_value += Number(quote.price) * order.amount;
+                        crypto.total_assets += 1;
+                        crypto.change_percentage = (crypto.current_total_avg_value - crypto.total_avg_value) / crypto.total_avg_value * 100;
+                        
+                        crypto.assets.push(order);
                     }
+                } else {
+                    let latestStockPrice = await YahooFinanceController.getLatestStockPrice(order.symbol);                  
+                    let category = assets[indexNew];
+                    // let changePercentage = latestStockPrice.price.regularMarketChangePercent * 100;
+                    if(order.asset_category === 'Commodity') {
+                        console.log(order, latestStockPrice.price);
+                    }
+
+                    if(latestStockPrice.Information) {
+                        console.log('Exceeding limit', latestStockPrice);
+                        // @TO DO res.success or res.error
+                        // return;
+                    }
+    
+                    category.total_avg_value += order.price * order.amount;
+                    category.total_avg_value.toFixed(2);
+                    
+                    category.current_total_avg_value += latestStockPrice.price.regularMarketPrice * order.amount;
+                    category.total_assets += 1;
+                    category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
+                    category.assets.push(order);
                 }
 
-                if(order.asset_category === 'real-estate') {
-                    response[3].total_avg_value += order.price * order.amount;
-                    response[3].assets.push(order);
-                }
+
+                // if(order.asset_category === 'Commodity') {
+                //     // @TO DO Search for good api for commodities
+                //     // 1. https://www.goldapi.io/api/XAU/USD/20201021 - Api key goldapi-tdyvukgj66d80-io
+                //     // 2. http://www.quandl.com/api/v3/datasets/LBMA/GOLD/data.json?start_date=2020-10-20&end_date=2020-10-21&api_key=yVQuad2-hSXdEpfrxXz4
+                //     // let latestStockPrice = await AlphavantageController.getLatestStockPrice(order.symbol);
+
+                //     response[2].total_avg_value += order.price * order.amount;
+                //     // response[2].current_total_avg_value += Number(latestStockPrice['Global Quote']['05. price']) * order.amount;
+
+                //     if(response[2].assets.length < 4) {
+                //         response[2].assets.push(order);
+                //     }
+                // }
+
+                // if(order.asset_category === 'real-estate') {
+                //     response[3].total_avg_value += order.price * order.amount;
+                //     response[3].assets.push(order);
+                // }
             }
 
-            // for (const assetCategory of response) {
-            //     assetCategory.change_percentage = await calculateWeightedAverage(assetCategory.assets);
-            // }
+            assets.sort((a, b) => b.current_total_avg_value - a.current_total_avg_value);
 
-            response.sort((a, b) => b.current_total_avg_value - a.current_total_avg_value);
-
-            return res.success(response);
+            return res.success(assets);
         } catch (error) {
             console.log(error)
             res.error("Something went wrong!");        
@@ -111,41 +115,17 @@ module.exports = function (
             let assetData = [];
             let dates = [];
 
-            let query = { user_id: userId };
-
             // if(period === 'year' || period === 'ytd') {
             //     query.transaction_date = await determinePortfolioBalanceQuery(period);
             // }
 
-            console.log(query)
-
-            let userOrders = await Transaction.find(query)
+            let userOrders = await Transaction.find({ user_id: userId })
                 .lean()
                 .exec();
-
-            // console.log(userOrders);
 
             if(!userOrders) {
                 return res.error('Unable to find user.')
             }
-            
-
-            // const symbols = [];
-            
-            // for (const order of userOrders) {
-            //     symbols.push(order.symbol);
-            // }
-
-            // console.log(symbols);
-
-            // const test = yahooFinance.historical({
-            //     symbols: [ 'GLD', 'MSFT', 'AAPL', 'BTC', 'GOLD' ],
-            //     // from: '2012-01-01',
-            //     // to: '2012-12-31'
-            // }, (err, quotes) => {
-
-            //     console.log(quotes);
-            // });
 
             for (const order of userOrders) {
                 //@TO DO Handle all other assets.
@@ -155,11 +135,7 @@ module.exports = function (
                     //@TO DO do not get double stock data.
                     let outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
                     let dailyPrices = await AlphavantageController.getDailyPrices(order.symbol, outputSize);
-                    
-                    // console.log('dailyPrices', dailyPrices);
-                    // console.log('dailyPrices["Time Series (Daily)"]', order.symbol, dailyPrices['Time Series (Daily)']);
-                    // console.log("Object.keys(dailyPrices['Time Series (Daily)']).length", Object.keys(dailyPrices['Time Series (Daily)']).length);
-
+                  
                     if(!dailyPrices['Time Series (Daily)']) {
                         return;
                     }
@@ -170,7 +146,7 @@ module.exports = function (
                     const today = moment().startOf('day');
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period +'s') : moment().startOf('year');
                     
-                    console.log(order, total_avg_value);
+                    // console.log(order, total_avg_value);
 
                     const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
                         // .filter(key => key >= moment(query.transaction_date['$gte']).format('YYYY-MM-DD') && key <= moment(query.transaction_date['$lte']).format('YYYY-MM-DD'))
@@ -206,8 +182,6 @@ module.exports = function (
                         assetData.push({ [order.symbol]: filtered });
                 }
             };
-
-            console.log(dates)
     
             let response = [];
 
@@ -269,26 +243,6 @@ module.exports = function (
             res.error("Something went wrong!");        
         }
     });
-
-    var yahooFinanceFilter = async (period) => {
-        // {
-        //     symbols: [ 'GLD', 'MSFT', 'AAPL', 'BTC', 'GOLD' ],
-        //     from: '2012-01-01',
-        //     to: '2012-12-31'
-        // }
-        // const today = moment().startOf('day');
-
-        // switch (period) {
-        //     case 'week':
-        //         return  { "$gte": today.toDate(), "$lt": moment(today).add(7, 'days').toDate() };
-        //     case 'mtd':
-        //         return  { "$gte": moment(today).substract(1, 'months').toDate(), "$lte": today.toDate()};
-        //     case 'month':
-        //         return  { "$gte": today.toDate(), "$lte": moment(today).add(7, 'days').toDate() };
-        //     case 'year':
-        //         return  { "$gte": today.toDate(), "$lt": moment(today).substract(1, 'years').toDate() };
-        // }
-    }
 
     var determinePortfolioBalanceQuery = async (period) => {
         const today = moment().startOf('day');
