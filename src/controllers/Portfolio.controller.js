@@ -10,6 +10,7 @@ module.exports = function (
     const Transaction = require("../models/Transaction.model");
     const AlphavantageController = require("./Alphavantage.controller");
     const YahooFinanceController = require("./YahooFinance.controller");
+    const FMPController = require("./FinancialModelingPrep.controller");
 
     app.get("/api/portfolio/asset-allocation", VerifyToken, async (req, res) => {
         try {
@@ -26,7 +27,6 @@ module.exports = function (
 
             for (const order of userOrders) {
                 const index = assets.findIndex(item => item.name === order.asset_category);
-                
                 if(index < 0){
                     assets.push({ 
                         name: order.asset_category,
@@ -41,26 +41,39 @@ module.exports = function (
 
                 const indexNew = assets.findIndex(item => item.name === order.asset_category);
 
-                if(order.asset_category === 'Crypto') {
-                    if(indexNew >= 0) {
-                        let crypto = assets[indexNew];
-                        let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
-                        let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
+                if(indexNew < 0) {
+                    console.log('INDEX NEW < 0', indexNew, order.symbol);
+                    return
+                }
 
-                        crypto.total_avg_value += order.price * order.amount;                    
-                        crypto.current_total_avg_value += Number(quote.price) * order.amount;
-                        crypto.total_assets += 1;
-                        crypto.change_percentage = (crypto.current_total_avg_value - crypto.total_avg_value) / crypto.total_avg_value * 100;
-                        
-                        crypto.assets.push(order);
-                    }
+                if(order.asset_category === 'Crypto') {
+                    let crypto = assets[indexNew];
+                    let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
+                    let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
+
+                    crypto.total_avg_value += order.price * order.amount;                    
+                    crypto.current_total_avg_value += Number(quote.price) * order.amount;
+                    crypto.total_assets += 1;
+                    crypto.change_percentage = (crypto.current_total_avg_value - crypto.total_avg_value) / crypto.total_avg_value * 100;
+                    
+                    crypto.assets.push(order);
+                } else if(order.asset_category === 'Commodity') {
+                    
+                    let latestCommodityPrice = await FMPController.getLatestCommodityPrice(order.symbol);     
+                    console.log('latestCommodityPrice', latestCommodityPrice[0])             
+                    let category = assets[indexNew];
+    
+                    category.total_avg_value += order.price * order.amount;
+                    category.total_avg_value.toFixed(2);
+                    
+                    category.current_total_avg_value += latestCommodityPrice[0].price * order.amount;
+                    category.total_assets += 1;
+                    category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
+                    category.assets.push(order);
                 } else {
                     let latestStockPrice = await YahooFinanceController.getLatestStockPrice(order.symbol);                  
                     let category = assets[indexNew];
                     // let changePercentage = latestStockPrice.price.regularMarketChangePercent * 100;
-                    if(order.asset_category === 'Commodity') {
-                        console.log(order, latestStockPrice.price);
-                    }
 
                     if(latestStockPrice.Information) {
                         console.log('Exceeding limit', latestStockPrice);
@@ -76,21 +89,6 @@ module.exports = function (
                     category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
                     category.assets.push(order);
                 }
-
-
-                // if(order.asset_category === 'Commodity') {
-                //     // @TO DO Search for good api for commodities
-                //     // 1. https://www.goldapi.io/api/XAU/USD/20201021 - Api key goldapi-tdyvukgj66d80-io
-                //     // 2. http://www.quandl.com/api/v3/datasets/LBMA/GOLD/data.json?start_date=2020-10-20&end_date=2020-10-21&api_key=yVQuad2-hSXdEpfrxXz4
-                //     // let latestStockPrice = await AlphavantageController.getLatestStockPrice(order.symbol);
-
-                //     response[2].total_avg_value += order.price * order.amount;
-                //     // response[2].current_total_avg_value += Number(latestStockPrice['Global Quote']['05. price']) * order.amount;
-
-                //     if(response[2].assets.length < 4) {
-                //         response[2].assets.push(order);
-                //     }
-                // }
 
                 // if(order.asset_category === 'real-estate') {
                 //     response[3].total_avg_value += order.price * order.amount;

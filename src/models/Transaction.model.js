@@ -7,6 +7,7 @@ const transactionSchema = new Schema({
   name: { type: String },
   asset_category: { type: String },
   symbol: {type: String},
+  tradingview_symbol: {type: String},
   price: { type: Number },
   amount: { type: Number },
   transaction_value: { type: Number },

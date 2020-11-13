@@ -23,6 +23,10 @@ module.exports = function (
             modified_date: new Date(),
         })
 
+        if(newTransaction.asset_category === 'Commodity') {
+            newTransaction.tradingview_symbol = await tradingviewSymbol(newTransaction.symbol);
+        }
+
         let transactionSaved = await newTransaction.save();
 
         if (!transactionSaved) {
@@ -56,4 +60,76 @@ module.exports = function (
     }
   });
 
+  const tradingviewSymbol = (symbol) => {
+    // Gold
+    if (symbol === 'GCUSD' || symbol === 'ZGUSD') {
+        return 'FOREXCOM:XAUUSD';
+    }
+
+    // Silver
+    if (symbol === 'SIUSD' || symbol === 'ZIUSD') {
+        return 'FOREXCOM:XAGUSD';
+    }
+
+    // Crude Oil
+    if (symbol === 'CLUSD') {
+        return 'NYMEX:CL1!';
+    }
+
+    // Brent Crude Oil
+    if (symbol === 'BZUSD') {
+        return 'OANDA:BCOUSD';
+    }
+
+    // Natural Gas
+    if(symbol === 'NGUSD') {
+        return 'NYMEX:NG1!'
+    }
+
+    // Palladium
+    if(symbol === 'PAUSD') {
+        return 'CURRENCYCOM:PALLADIUM'
+    }
+
+    // Palladium
+    if(symbol === 'PAUSD') {
+        return 'CURRENCYCOM:PALLADIUM'
+    }
+
+    // Coffee
+    if(symbol === 'KCUSX') {
+        return 'ICEUS:KC1!';
+    }
+    
+    // Coffee
+    if(symbol === 'KCUSX') {
+        return 'ICEUS:KC1!';
+    }
+
+    // Sugar
+    if(symbol === 'SBUSX'){
+        return 'ICEUS:SB1!';
+    }
+
+    // Cocoa
+    if(symbol === 'CCUSD') {
+        return 'ICEUS:CC1!';
+    }
+
+    // Copper
+    if(sumbol === 'HGUSD') {
+        return 'COMEX:HG1!';
+    }
+
+    // Platinum
+    if(sumbol === 'PLUSD') {
+        return 'OANDA:XPTUSD';
+    }
+
+    // Cotton
+    if(sumbol === 'CTUSX') {
+        return 'ICEUS:CT1!';
+    }
+
+  }
 }
