@@ -1,6 +1,8 @@
 
 let Alpha = require('alpha_vantage_api_wrapper').Alpha
-let alpha = new Alpha('XO4GDQ81IPZZIG4Y');
+// let alpha = new Alpha('XO4GDQ81IPZZIG4Y');
+let alpha = new Alpha('ECE3FKFK0L5YRBQO');
+
 
 module.exports = function (app, VerifyToken) {
     /**
@@ -101,6 +103,19 @@ module.exports = function (app, VerifyToken) {
     }
   );
 
+  module.exports.getDailyPrices = async (ticker, outputSize) => {
+    if (!ticker) {
+      return null;
+    }
+
+    return await alpha.stocks.daily(ticker, outputSize, {"datatype" : 'json'})
+      .then((res) => res)
+      .catch((err) => {
+          // Handle the error
+          console.log(err);
+          return res.error(e);
+      });
+  };
   
   module.exports.getMonthlyPrices = async (ticker) => {
     if (!ticker) {
