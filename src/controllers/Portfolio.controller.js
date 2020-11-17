@@ -3,11 +3,10 @@
 module.exports = function (
     app,
     VerifyToken
-  ) {    
-    const mongoose = require("mongoose");
+) {
     const moment = require('moment');
-    const CoinmarketcapController = require('./Coinmarketcap.controller');
     const Transaction = require("../models/Transaction.model");
+    const CoinmarketcapController = require('./Coinmarketcap.controller');
     const AlphavantageController = require("./Alphavantage.controller");
     const YahooFinanceController = require("./YahooFinance.controller");
     const FMPController = require("./FinancialModelingPrep.controller");
@@ -15,11 +14,11 @@ module.exports = function (
     app.get("/api/portfolio/asset-allocation", VerifyToken, async (req, res) => {
         try {
             let userId = req.userId;
-            let userOrders = await Transaction.find({user_id: userId})
+            let userOrders = await Transaction.find({ user_id: userId })
                 .lean()
                 .exec();
 
-            if(!userOrders) {
+            if (!userOrders) {
                 return res.error('Unable to find user.')
             }
 
@@ -27,8 +26,8 @@ module.exports = function (
 
             for (const order of userOrders) {
                 const index = assets.findIndex(item => item.name === order.asset_category);
-                if(index < 0){
-                    assets.push({ 
+                if (index < 0) {
+                    assets.push({
                         name: order.asset_category,
                         type: order.asset_category.toLowerCase(),
                         total_assets: 0,
@@ -41,49 +40,47 @@ module.exports = function (
 
                 const indexNew = assets.findIndex(item => item.name === order.asset_category);
 
-                if(indexNew < 0) {
+                if (indexNew < 0) {
                     console.log('INDEX NEW < 0', indexNew, order.symbol);
                     return
                 }
 
-                if(order.asset_category === 'Crypto') {
+                if (order.asset_category === 'Crypto') {
                     let crypto = assets[indexNew];
                     let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
                     let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
 
-                    crypto.total_avg_value += order.price * order.amount;                    
+                    crypto.total_avg_value += order.price * order.amount;
                     crypto.current_total_avg_value += Number(quote.price) * order.amount;
                     crypto.total_assets += 1;
                     crypto.change_percentage = (crypto.current_total_avg_value - crypto.total_avg_value) / crypto.total_avg_value * 100;
-                    
+
                     crypto.assets.push(order);
-                } else if(order.asset_category === 'Commodity') {
-                    
-                    let latestCommodityPrice = await FMPController.getLatestCommodityPrice(order.symbol);     
-                    console.log('latestCommodityPrice', latestCommodityPrice[0])             
+                } else if (order.asset_category === 'Commodity') {
+
+                    let latestCommodityPrice = await FMPController.getLatestCommodityPrice(order.symbol);
                     let category = assets[indexNew];
-    
+
                     category.total_avg_value += order.price * order.amount;
                     category.total_avg_value.toFixed(2);
-                    
+
                     category.current_total_avg_value += latestCommodityPrice[0].price * order.amount;
                     category.total_assets += 1;
                     category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
                     category.assets.push(order);
                 } else {
-                    let latestStockPrice = await YahooFinanceController.getLatestStockPrice(order.symbol);                  
+                    let latestStockPrice = await YahooFinanceController.getLatestStockPrice(order.symbol);
                     let category = assets[indexNew];
-                    // let changePercentage = latestStockPrice.price.regularMarketChangePercent * 100;
 
-                    if(latestStockPrice.Information) {
+                    if (latestStockPrice.Information) {
                         console.log('Exceeding limit', latestStockPrice);
                         // @TO DO res.success or res.error
                         // return;
                     }
-    
+
                     category.total_avg_value += order.price * order.amount;
                     category.total_avg_value.toFixed(2);
-                    
+
                     category.current_total_avg_value += latestStockPrice.price.regularMarketPrice * order.amount;
                     category.total_assets += 1;
                     category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
@@ -101,10 +98,10 @@ module.exports = function (
             return res.success(assets);
         } catch (error) {
             console.log(error)
-            res.error("Something went wrong!");        
+            res.error("Something went wrong!");
         }
     });
-  
+
     app.get("/api/portfolio/balance/:period", VerifyToken, async (req, res) => {
         try {
             const period = req.params.period;
@@ -121,29 +118,29 @@ module.exports = function (
                 .lean()
                 .exec();
 
-            if(!userOrders) {
+            if (!userOrders) {
                 return res.error('Unable to find user.')
             }
 
             for (const order of userOrders) {
                 //@TO DO Handle all other assets.
 
-                if(order.asset_category === 'Equity' || order.asset_category === 'ETF') {
+                if (order.asset_category === 'Equity' || order.asset_category === 'ETF') {
                     //@TO DO get current price of the stock user has bought.
                     //@TO DO do not get double stock data.
                     let outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
                     let dailyPrices = await AlphavantageController.getDailyPrices(order.symbol, outputSize);
-                  
-                    if(!dailyPrices['Time Series (Daily)']) {
+
+                    if (!dailyPrices['Time Series (Daily)']) {
                         return;
                     }
-                    
+
                     let total_avg_value = 0;
                     total_avg_value += order.price * order.amount;
 
                     const today = moment().startOf('day');
-                    const $gte = period !== 'ytd' ? moment(today).subtract(1, period +'s') : moment().startOf('year');
-                    
+                    const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
+
                     // console.log(order, total_avg_value);
 
                     const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
@@ -152,7 +149,7 @@ module.exports = function (
                         .reduce((obj, key) => {
                             obj[key] = dailyPrices['Time Series (Daily)'][key];
 
-                            if(!dates.includes(key)){
+                            if (!dates.includes(key)) {
                                 dates.push(key);
                             }
 
@@ -163,82 +160,82 @@ module.exports = function (
                             obj[key].price = 0;
                             obj[key].amount = 0;
 
-                            
-                            if(key >= moment(order.transaction_date).format('YYYY-MM-DD')) {    
+
+                            if (key >= moment(order.transaction_date).format('YYYY-MM-DD')) {
                                 obj[key].total_avg_value = total_avg_value;
                                 obj[key].price = Number(obj[key]['4. close']);
                                 obj[key].current_total_avg_value += obj[key].price * order.amount;
                                 obj[key].change_percentage = (obj[key].current_total_avg_value - total_avg_value) / total_avg_value * 100;
-    
+
                                 obj[key].change_value = obj[key].current_total_avg_value - total_avg_value;
                                 obj[key].amount = order.amount;
                             }
-                            
+
                             return obj;
                         }, {});
 
-                        assetData.push({ [order.symbol]: filtered });
+                    assetData.push({ [order.symbol]: filtered });
                 }
             };
-    
+
             let response = [];
 
-            for (let date of dates){
+            for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
                 let total_change_value = 0;
 
                 // For all dates
-                for (let data of assetData){
+                for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
 
                     // For all companies
-                    if(data[companyTicker] !== undefined){
+                    if (data[companyTicker] !== undefined) {
                         let month = data[companyTicker][date];
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
                     }
                 }
-                
+
                 response.push({
-                    date: new Date(date).toLocaleString("en-us", { year:'numeric', month: 'short', day : "2-digit" }), 
-                    total_avg_value: total_avg_value, 
-                    total_change_value: total_change_value,                    
+                    date: new Date(date).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" }),
+                    total_avg_value: total_avg_value,
+                    total_change_value: total_change_value,
                     total_change_percentage: (total_change_value / total_avg_value) * 100,
                     total_portfolio_balance: total_avg_value + total_change_value
                 });
             }
 
-            return res.success({labels: dates.map(d => new Date(d).toLocaleString("en-us", { year:'numeric', month: 'short', day : "2-digit" })).reverse(), value: response.reverse() });
+            return res.success({ labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), value: response.reverse() });
         } catch (error) {
             console.log(error)
-            res.error("Something went wrong!");        
+            res.error("Something went wrong!");
         }
     });
-  
+
     app.get("/api/portfolio/assets/:number", VerifyToken, async (req, res) => {
         try {
             let userId = req.userId;
             let numberOfAssets = Number(req.params.number);
 
-            if(numberOfAssets > 5) {
+            if (numberOfAssets > 5) {
                 return res.error();
             }
 
-            let biggestHoldings = await Transaction.find({user_id: userId})
-                .sort({transaction_value: -1})
+            let biggestHoldings = await Transaction.find({ user_id: userId })
+                .sort({ transaction_value: -1 })
                 .limit(numberOfAssets)
                 .lean()
                 .exec();
 
-            if(!biggestHoldings) {
+            if (!biggestHoldings) {
                 return res.error('Unable to find user.')
             }
 
             return res.success(biggestHoldings);
         } catch (error) {
             console.log(error)
-            res.error("Something went wrong!");        
+            res.error("Something went wrong!");
         }
     });
 
@@ -253,9 +250,9 @@ module.exports = function (
             // case 'month':
             //     return  { "$gte": today.toDate(), "$lt": moment(today).add(7, 'days').toDate() };
             case 'year':
-                return  { "$gte": moment(today).subtract(1, 'years').toDate(), "$lte": today.toDate() };                
+                return { "$gte": moment(today).subtract(1, 'years').toDate(), "$lte": today.toDate() };
             case 'ytd':
-                return  { "$gte": moment().startOf('year').toDate(), "$lte": today.toDate() };
+                return { "$gte": moment().startOf('year').toDate(), "$lte": today.toDate() };
         }
     }
 
@@ -264,7 +261,7 @@ module.exports = function (
         let totalAmounts = 0;
 
         data.forEach(asset => {
-            if(!asset.change_percentage) {
+            if (!asset.change_percentage) {
                 return;
             }
 
