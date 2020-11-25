@@ -12,6 +12,7 @@ const FinancialModelingPrep = require('./controllers/FinancialModelingPrep.contr
 const TransactionController = require('./controllers/Transaction.controller');
 const PortfolioController = require('./controllers/Portfolio.controller');
 const WatchlistController = require('./controllers/Watchlist.controller');
+const MollieController = require('./controllers/Mollie.controller');
 
 const app = express();
 
@@ -65,5 +66,6 @@ FinancialModelingPrep(app, VerifyToken);
 TransactionController(app, VerifyToken);
 PortfolioController(app, VerifyToken);
 WatchlistController(app, VerifyToken);
+MollieController(app, VerifyToken);
 
 module.exports = app
