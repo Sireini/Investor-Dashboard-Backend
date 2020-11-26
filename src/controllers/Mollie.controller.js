@@ -1,10 +1,13 @@
-const User = require('../models/User.model');
-const MollieSubscription = require('../models/Mollie-Subscription.model');
+
 
 module.exports = function (
     app, VerifyToken
 ) {
-    const apiKey = 'test_bxFVF3zMEEsyBk3N7qJ9x8wSQwWPkP'
+    const apiKey = 'test_bxFVF3zMEEsyBk3N7qJ9x8wSQwWPkP';
+    const mongoose = require("mongoose");
+    const User = require('../models/User.model');
+    const MollieSubscription = require('../models/Mollie-Subscription.model');
+
   /*
    **
    ** Financi Standard - Mollie €1 subscription
