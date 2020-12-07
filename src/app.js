@@ -1,7 +1,7 @@
 const express = require('express')
 require('./db/mongoose.connect') // Connect to DB
 
-const demoRouter = require('./routers/demo.router');
+const portfolioRouter = require('./routers/portfolio.router');
 const VerifyToken = require('./auth/VerifyToken').VerifyToken;
 
 const UserController = require('./controllers/User.controller');
@@ -20,7 +20,7 @@ const cors = require('cors');
 app.use(cors());
 
 app.use(express.json())
-app.use(demoRouter)
+app.use(portfolioRouter)
 
 app.use("/*", (req, res, next) => {
     res.error = (err) => {

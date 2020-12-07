@@ -12,6 +12,7 @@ module.exports = function (
 
     app.post("/api/transaction", VerifyToken, async (req, res) => {
         try {
+
             let newTransaction = new Transaction({
                 _id: new mongoose.Types.ObjectId(),
                 user_id: req.userId,

@@ -160,7 +160,6 @@ module.exports = function (
                             obj[key].price = 0;
                             obj[key].amount = 0;
 
-
                             if (key >= moment(order.transaction_date).format('YYYY-MM-DD')) {
                                 obj[key].total_avg_value = total_avg_value;
                                 obj[key].price = Number(obj[key]['4. close']);
