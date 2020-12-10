@@ -156,6 +156,7 @@ module.exports = function (
             let paymentId = req.body.id;
             let userId = req.params.userId;
 
+            console.log('req body: ', req.body);
             console.log('webhook paymentId: ', paymentId);
             console.log('webhook userId: ', userId);
 
