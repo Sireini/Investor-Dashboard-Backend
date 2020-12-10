@@ -155,10 +155,13 @@ module.exports = function (
         try {
             let paymentId = req.body.id;
             let userId = req.params.userId;
+
+            console.log('webhook paymentId: ', paymentId);
+            console.log('webhook userId: ', userId);
+
             let paymentRequest = await getSubscriptionPayment(
                 paymentId
             );
-            console.log('webhook paymentId: ', paymentId);
             console.log('webhook paymentRequest: ', paymentRequest);
 
             let subscriptionPlan = req.params.subscriptionPlan;
@@ -301,7 +304,7 @@ module.exports = function (
 
             return res.success({});
         } catch (e) {
-            console.error(e);
+            console.error('Mollie webhookd error: ', e);
             return res.success({
                 payment: null,
             });
@@ -383,6 +386,8 @@ module.exports = function (
                 "Content-Type": "application/x-www-form-urlencoded",
             },
         };
+
+        console.log('getSubscription Payment options: ', options, apiKey);
 
         return await makeRequest(options);
     };
