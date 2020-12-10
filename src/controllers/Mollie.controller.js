@@ -158,6 +158,9 @@ module.exports = function (
             let paymentRequest = await getSubscriptionPayment(
                 paymentId
             );
+            console.log('webhook paymentId: ', paymentId);
+            console.log('webhook paymentRequest: ', paymentRequest);
+
             let subscriptionPlan = req.params.subscriptionPlan;
             let subscriptionInterval;
             let subscriptionAmount;
@@ -184,6 +187,8 @@ module.exports = function (
                 paymentRequest.mandateId
             );
 
+            console.log('webhook mandate: ', mandate);
+
             if (!mandate) {
                 return res.error("Sorry unable to find mandate");
             }
@@ -199,6 +204,8 @@ module.exports = function (
             })
                 .lean()
                 .exec();
+
+            console.log('webhook payment in database', payment);
 
             if (!payment) {
                 return res.error("Sorry unable to find userpayment");
@@ -216,13 +223,14 @@ module.exports = function (
                 webhookUrl: webhookUrl,
             };
 
-            console.log(requestData);
+            console.log('webhook requestData: ', requestData);
 
             // Create Subscription
             let createMollieSubscription = await createSubscription(
                 paymentRequest.customerId,
                 requestData
             );
+            console.log('webhook createMollieSubscription: ', requestData);
 
             if (!createMollieSubscription) {
                 return res.error("Sorry unable to create your subscription");
