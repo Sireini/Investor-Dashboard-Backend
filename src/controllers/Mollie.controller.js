@@ -158,7 +158,7 @@ module.exports = function (
             let paymentId = req.body.id;
             let userId = req.params.userId;
 
-            console.log('req body: ', req.body);
+            console.log('req body: ', req);
             console.log('webhook paymentId: ', paymentId);
             console.log('webhook userId: ', userId);
 
@@ -226,8 +226,7 @@ module.exports = function (
                 description:
                     `Investly Standard - ${subscriptionPlan} Subscription - ` +
                     paymentRequest.customerId,
-                webhookUrl: webhookUrl,
-                testmode: true
+                webhookUrl: webhookUrl
             };
 
             console.log('webhook requestData: ', requestData);
