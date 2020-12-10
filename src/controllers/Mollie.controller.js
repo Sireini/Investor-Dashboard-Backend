@@ -226,6 +226,7 @@ module.exports = function (
                     `Investly Standard - ${subscriptionPlan} Subscription - ` +
                     paymentRequest.customerId,
                 webhookUrl: webhookUrl,
+                testmode: true
             };
 
             console.log('webhook requestData: ', requestData);
@@ -389,7 +390,7 @@ module.exports = function (
             },
         };
 
-        console.log('getSubscription Payment options: ', options, apiKey);
+        console.log('getSubscription Payment options: ', molliePaymentId, options, apiKey);
 
         return await makeRequest(options);
     };
