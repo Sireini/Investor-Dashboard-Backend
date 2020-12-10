@@ -78,7 +78,7 @@ module.exports = function (
                 let paymentId = mongoose.mongo.ObjectId();
                 let subscriptionPlan = req.body.subscriptionPlan;
 
-                console.log(req.body)
+                console.log('create-payment req.body: ', req.body)
 
                 let webhookUrl =
                     "https://investly.nl/api/investly-standard/" + subscriptionPlan + "/payment/" + req.body.UserId;
@@ -98,8 +98,7 @@ module.exports = function (
                     description: "Investly Standard First Payment - " + customerId,
                     metadata: { UserId: req.body.UserId, Type: "Standard" },
                     redirectUrl: redirectUrl,
-                    webhookUrl: webhookUrl,
-                    testmode: true
+                    webhookUrl: webhookUrl
                 };
 
                 let request = require("request");
@@ -125,7 +124,7 @@ module.exports = function (
 
                     let data = JSON.parse(body);
 
-                    console.log('Create Payment Data: ', data);
+                    console.log('Create Payment Post Mollie Data: ', data);
 
                     let mijnMenuSubscription = new MollieSubscription();
                     mijnMenuSubscription._id = paymentId;
