@@ -99,6 +99,7 @@ module.exports = function (
                     metadata: { UserId: req.body.UserId, Type: "Standard" },
                     redirectUrl: redirectUrl,
                     webhookUrl: webhookUrl,
+                    testmode: true
                 };
 
                 let request = require("request");
