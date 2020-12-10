@@ -125,6 +125,8 @@ module.exports = function (
 
                     let data = JSON.parse(body);
 
+                    console.log('Create Payment Data: ', data);
+
                     let mijnMenuSubscription = new MollieSubscription();
                     mijnMenuSubscription._id = paymentId;
                     mijnMenuSubscription.status = data.status;
