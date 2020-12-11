@@ -83,8 +83,8 @@ module.exports = function (
                 let webhookUrl =
                     "https://investly.nl/api/investly-standard/" + subscriptionPlan + "/payment/" + req.body.UserId;
 
-                // let redirectUrl = "https://investly.nl/login?customerId=" + customerId;
-                let redirectUrl = "https://investly.nl/dashboard/";
+                let redirectUrl = "https://investly.nl/login?customerId=" + customerId;
+                // let redirectUrl = "https://investly.nl/dashboard/";
 
                 if (!customerId) {
                     return res.error("Please send a valid Mollie Customer Id");
@@ -149,9 +149,57 @@ module.exports = function (
             }
         });
 
+
+    /**
+     * Get Payment & Subscription Status
+     */
+    app.get(
+        "/api/investly-standard/subscription/:customerId",
+        async (req, res, next) => {
+            try {
+                let customerId = req.params.customerId;
+
+                let mollieFirstPayment = await MollieSubscription.find({
+                    customerId: customerId,
+                    resource: "payment",
+                    status: "paid",
+                })
+                    .lean()
+                    .exec();
+
+                let mollieSubscription = await MollieSubscription.find({
+                    customerId: customerId,
+                    resource: "subscription",
+                    status: "active",
+                })
+                    .lean()
+                    .exec();
+
+                if (!mollieSubscription && !mollieFirstPayment) {
+                    return res.success({
+                        payment: null,
+                        mollieSubscription: null,
+                    });
+                } else {
+                    return res.success({
+                        payment: mollieFirstPayment,
+                        mollieSubscription: mollieSubscription,
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+                return res.success({
+                    payment: null,
+                    mollieSubscription: null,
+                });
+            }
+        }
+    );
+
+
     /**
      * Handle webhook url for first payment
-     * Called by Mollie webhook to update status of subscription
+     * Called by Mollie webhook to update status of the first payment
      */
     app.post("/api/investly-standard/:subscriptionPlan/payment/:userId", async (req, res) => {
         try {

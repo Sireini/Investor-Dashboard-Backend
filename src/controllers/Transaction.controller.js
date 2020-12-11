@@ -46,11 +46,12 @@ module.exports = function (
     });
 
 
-    app.get("/api/transaction/list", VerifyToken, async (req, res) => {
+    app.get("/api/transaction/list/:limit", VerifyToken, async (req, res) => {
         try {
             let userId = req.userId;
+            let limit = req.params.limit;
             let userOrders = await Transaction.find({ user_id: userId })
-                .limit(4)
+                .limit(limit)
                 .lean()
                 .exec();
 
