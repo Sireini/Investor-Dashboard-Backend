@@ -126,24 +126,24 @@ module.exports = function (
 
                     console.log('Create Payment Post Mollie Data: ', data);
 
-                    let mollieSubscription = new MollieSubscription();
-                    mollieSubscription._id = paymentId;
-                    mollieSubscription.status = data.status;
-                    mollieSubscription.paymentId = data.id;
-                    mollieSubscription.customerId = customerId;
-                    mollieSubscription.profileId = data.profileId;
+                    let investlySubscription = new MollieSubscription();
+                    investlySubscription._id = paymentId;
+                    investlySubscription.status = data.status;
+                    investlySubscription.paymentId = data.id;
+                    investlySubscription.customerId = customerId;
+                    investlySubscription.profileId = data.profileId;
 
-                    mollieSubscription.type = "Standard";
-                    mollieSubscription.resource = data.resource;
-                    mollieSubscription.sequenceType = data.sequenceType;
-                    mollieSubscription.metadata = data.metadata;
-                    mollieSubscription.method = data.method;
-                    mollieSubscription.description = data.description;
-                    mollieSubscription.amount = data.amount;
-                    mollieSubscription.createdAt = data.createdAt;
-                    mollieSubscription.recordCreatedAt = new Date();
+                    investlySubscription.type = "Standard";
+                    investlySubscription.resource = data.resource;
+                    investlySubscription.sequenceType = data.sequenceType;
+                    investlySubscription.metadata = data.metadata;
+                    investlySubscription.method = data.method;
+                    investlySubscription.description = data.description;
+                    investlySubscription.amount = data.amount;
+                    investlySubscription.createdAt = data.createdAt;
+                    investlySubscription.recordCreatedAt = new Date();
 
-                    await mollieSubscription.save();
+                    await investlySubscription.save();
                     res.success(data);
                 });
             }
@@ -290,32 +290,32 @@ module.exports = function (
                 return res.error("Sorry unable to create your subscription");
             }
 
-            let mollieSubscription = new MollieSubscription();
-            mollieSubscription._id = mongoose.mongo.ObjectId();
-            mollieSubscription.status = createMollieSubscription.status;
-            mollieSubscription.customerId = paymentRequest.customerId;
-            mollieSubscription.profileId = paymentRequest.profileId;
-            mollieSubscription.subscriptionId = createMollieSubscription.id;
-            mollieSubscription.mandateId = mandate.id;
+            let investlySubscription = new MollieSubscription();
+            investlySubscription._id = mongoose.mongo.ObjectId();
+            investlySubscription.status = createMollieSubscription.status;
+            investlySubscription.customerId = paymentRequest.customerId;
+            investlySubscription.profileId = paymentRequest.profileId;
+            investlySubscription.subscriptionId = createMollieSubscription.id;
+            investlySubscription.mandateId = mandate.id;
 
-            mollieSubscription.type = "Standard";
-            mollieSubscription.resource = createMollieSubscription.resource;
-            mollieSubscription.sequenceType = createMollieSubscription.sequenceType;
-            mollieSubscription.metadata = createMollieSubscription.metadata;
-            mollieSubscription.method = createMollieSubscription.method;
-            mollieSubscription.description = createMollieSubscription.description;
-            mollieSubscription.amount = createMollieSubscription.amount;
-            mollieSubscription.times = createMollieSubscription.times;
-            mollieSubscription.timesRemaining =
+            investlySubscription.type = "Standard";
+            investlySubscription.resource = createMollieSubscription.resource;
+            investlySubscription.sequenceType = createMollieSubscription.sequenceType;
+            investlySubscription.metadata = createMollieSubscription.metadata;
+            investlySubscription.method = createMollieSubscription.method;
+            investlySubscription.description = createMollieSubscription.description;
+            investlySubscription.amount = createMollieSubscription.amount;
+            investlySubscription.times = createMollieSubscription.times;
+            investlySubscription.timesRemaining =
                 createMollieSubscription.timesRemaining;
-            mollieSubscription.interval = createMollieSubscription.interval;
-            mollieSubscription.startDate = createMollieSubscription.startDate;
-            mollieSubscription.nextPaymentDate =
+            investlySubscription.interval = createMollieSubscription.interval;
+            investlySubscription.startDate = createMollieSubscription.startDate;
+            investlySubscription.nextPaymentDate =
                 createMollieSubscription.nextPaymentDate;
-            mollieSubscription.createdAt = createMollieSubscription.createdAt;
-            mollieSubscription.recordCreatedAt = new Date();
+            investlySubscription.createdAt = createMollieSubscription.createdAt;
+            investlySubscription.recordCreatedAt = new Date();
 
-            await mollieSubscription.save();
+            await investlySubscription.save();
 
             let updatedData = {};
             updatedData["status"] = paymentRequest.status;
@@ -390,29 +390,29 @@ module.exports = function (
                 return res.error("Unable to get payment request or you did not pay");
             }
 
-            let mollieSubscription = new MollieSubscription();
-            mollieSubscription._id = mongoose.mongo.ObjectId();
-            mollieSubscription.status = subscription.status;
-            mollieSubscription.customerId = subscription.customerId;
-            mollieSubscription.profileId = subscription.profileId;
-            mollieSubscription.subscriptionId = subscriptionId;
-            mollieSubscription.mandateId = mollieSubscription.mandateId;
+            let investlySubscription = new MollieSubscription();
+            investlySubscription._id = mongoose.mongo.ObjectId();
+            investlySubscription.status = subscription.status;
+            investlySubscription.customerId = subscription.customerId;
+            investlySubscription.profileId = subscription.profileId;
+            investlySubscription.subscriptionId = subscriptionId;
+            investlySubscription.mandateId = mollieSubscription.mandateId;
 
-            mollieSubscription.type = subscription.type;
-            mollieSubscription.resource = mollieSubscription.resource;
-            mollieSubscription.sequenceType = subscription.sequenceType;
-            mollieSubscription.metadata = mollieSubscription.metadata;
-            mollieSubscription.method = subscription.method;
-            mollieSubscription.description = mollieSubscription.description;
-            mollieSubscription.amount = mollieSubscription.amount;
-            mollieSubscription.times = mollieSubscription.times;
-            mollieSubscription.timesRemaining = mollieSubscription.timesRemaining;
-            mollieSubscription.interval = mollieSubscription.interval;
-            mollieSubscription.startDate = mollieSubscription.startDate;
-            mollieSubscription.nextPaymentDate = mollieSubscription.nextPaymentDate;
-            mollieSubscription.createdAt = mollieSubscription.createdAt;
+            investlySubscription.type = subscription.type;
+            investlySubscription.resource = mollieSubscription.resource;
+            investlySubscription.sequenceType = subscription.sequenceType;
+            investlySubscription.metadata = mollieSubscription.metadata;
+            investlySubscription.method = subscription.method;
+            investlySubscription.description = mollieSubscription.description;
+            investlySubscription.amount = mollieSubscription.amount;
+            investlySubscription.times = mollieSubscription.times;
+            investlySubscription.timesRemaining = mollieSubscription.timesRemaining;
+            investlySubscription.interval = mollieSubscription.interval;
+            investlySubscription.startDate = mollieSubscription.startDate;
+            investlySubscription.nextPaymentDate = mollieSubscription.nextPaymentDate;
+            investlySubscription.createdAt = mollieSubscription.createdAt;
 
-            await mollieSubscription.save();
+            await investlySubscription.save();
 
             return res.success({});
         } catch (e) {
