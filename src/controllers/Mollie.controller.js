@@ -78,8 +78,6 @@ module.exports = function (
                 let paymentId = mongoose.mongo.ObjectId();
                 let subscriptionPlan = req.body.subscriptionPlan;
 
-                console.log('create-payment req.body: ', req.body)
-
                 let webhookUrl =
                     "https://investly.nl/api/investly-standard/" + subscriptionPlan + "/payment/" + req.body.UserId;
 
@@ -123,8 +121,6 @@ module.exports = function (
                     }
 
                     let data = JSON.parse(body);
-
-                    console.log('Create Payment Post Mollie Data: ', data);
 
                     let investlySubscription = new MollieSubscription();
                     investlySubscription._id = paymentId;
@@ -206,14 +202,9 @@ module.exports = function (
             let paymentId = req.body.id;
             let userId = req.params.userId;
 
-            console.log('req body: ', req);
-            console.log('webhook paymentId: ', paymentId);
-            console.log('webhook userId: ', userId);
-
             let paymentRequest = await getSubscriptionPayment(
                 paymentId
             );
-            console.log('webhook paymentRequest: ', paymentRequest);
 
             let subscriptionPlan = req.params.subscriptionPlan;
             let subscriptionInterval;
@@ -241,8 +232,6 @@ module.exports = function (
                 paymentRequest.mandateId
             );
 
-            console.log('webhook mandate: ', mandate);
-
             if (!mandate) {
                 return res.error("Sorry unable to find mandate");
             }
@@ -258,8 +247,6 @@ module.exports = function (
             })
                 .lean()
                 .exec();
-
-            console.log('webhook payment in database', payment);
 
             if (!payment) {
                 return res.error("Sorry unable to find userpayment");
@@ -277,14 +264,11 @@ module.exports = function (
                 webhookUrl: webhookUrl
             };
 
-            console.log('webhook requestData: ', requestData);
-
             // Create Subscription
             let createMollieSubscription = await createSubscription(
                 paymentRequest.customerId,
                 requestData
             );
-            console.log('webhook createMollieSubscription: ', requestData);
 
             if (!createMollieSubscription) {
                 return res.error("Sorry unable to create your subscription");
@@ -368,7 +352,6 @@ module.exports = function (
      */
     app.post("/api/investly/subscription/webhook", async (req, res) => {
         try {
-            console.log("WEBHOOK DATA", req.body, JSON.parse(body));
             let subscriptionId = req.body.id;
             let subscription = await MollieSubscription.find({
                 subscriptionId: subscriptionId,
@@ -437,8 +420,6 @@ module.exports = function (
                 "Content-Type": "application/x-www-form-urlencoded",
             },
         };
-
-        console.log('getSubscription Payment options: ', molliePaymentId, options, apiKey);
 
         return await makeRequest(options);
     };
