@@ -83,7 +83,7 @@ module.exports = function (
                 let webhookUrl =
                     "https://investly.nl/api/investly-standard/" + subscriptionPlan + "/payment/" + req.body.UserId;
 
-                let redirectUrl = "https://investly.nl/login?customerId=" + customerId;
+                let redirectUrl = "https://investly.nl/dashboard/login?customerId=" + customerId;
                 // let redirectUrl = "https://investly.nl/dashboard/";
 
                 if (!customerId) {
