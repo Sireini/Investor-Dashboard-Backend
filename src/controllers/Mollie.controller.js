@@ -126,24 +126,24 @@ module.exports = function (
 
                     console.log('Create Payment Post Mollie Data: ', data);
 
-                    let mijnMenuSubscription = new MollieSubscription();
-                    mijnMenuSubscription._id = paymentId;
-                    mijnMenuSubscription.status = data.status;
-                    mijnMenuSubscription.paymentId = data.id;
-                    mijnMenuSubscription.customerId = customerId;
-                    mijnMenuSubscription.profileId = data.profileId;
+                    let mollieSubscription = new MollieSubscription();
+                    mollieSubscription._id = paymentId;
+                    mollieSubscription.status = data.status;
+                    mollieSubscription.paymentId = data.id;
+                    mollieSubscription.customerId = customerId;
+                    mollieSubscription.profileId = data.profileId;
 
-                    mijnMenuSubscription.type = "Standard";
-                    mijnMenuSubscription.resource = data.resource;
-                    mijnMenuSubscription.sequenceType = data.sequenceType;
-                    mijnMenuSubscription.metadata = data.metadata;
-                    mijnMenuSubscription.method = data.method;
-                    mijnMenuSubscription.description = data.description;
-                    mijnMenuSubscription.amount = data.amount;
-                    mijnMenuSubscription.createdAt = data.createdAt;
-                    mijnMenuSubscription.recordCreatedAt = new Date();
+                    mollieSubscription.type = "Standard";
+                    mollieSubscription.resource = data.resource;
+                    mollieSubscription.sequenceType = data.sequenceType;
+                    mollieSubscription.metadata = data.metadata;
+                    mollieSubscription.method = data.method;
+                    mollieSubscription.description = data.description;
+                    mollieSubscription.amount = data.amount;
+                    mollieSubscription.createdAt = data.createdAt;
+                    mollieSubscription.recordCreatedAt = new Date();
 
-                    await mijnMenuSubscription.save();
+                    await mollieSubscription.save();
                     res.success(data);
                 });
             }
@@ -290,32 +290,32 @@ module.exports = function (
                 return res.error("Sorry unable to create your subscription");
             }
 
-            let mijnMenuSubscription = new MijnMenuSubscriptions();
-            mijnMenuSubscription._id = mongoose.mongo.ObjectId();
-            mijnMenuSubscription.status = createMollieSubscription.status;
-            mijnMenuSubscription.customerId = paymentRequest.customerId;
-            mijnMenuSubscription.profileId = paymentRequest.profileId;
-            mijnMenuSubscription.subscriptionId = createMollieSubscription.id;
-            mijnMenuSubscription.mandateId = mandate.id;
+            let mollieSubscription = new MollieSubscription();
+            mollieSubscription._id = mongoose.mongo.ObjectId();
+            mollieSubscription.status = createMollieSubscription.status;
+            mollieSubscription.customerId = paymentRequest.customerId;
+            mollieSubscription.profileId = paymentRequest.profileId;
+            mollieSubscription.subscriptionId = createMollieSubscription.id;
+            mollieSubscription.mandateId = mandate.id;
 
-            mijnMenuSubscription.type = "Standard";
-            mijnMenuSubscription.resource = createMollieSubscription.resource;
-            mijnMenuSubscription.sequenceType = createMollieSubscription.sequenceType;
-            mijnMenuSubscription.metadata = createMollieSubscription.metadata;
-            mijnMenuSubscription.method = createMollieSubscription.method;
-            mijnMenuSubscription.description = createMollieSubscription.description;
-            mijnMenuSubscription.amount = createMollieSubscription.amount;
-            mijnMenuSubscription.times = createMollieSubscription.times;
-            mijnMenuSubscription.timesRemaining =
+            mollieSubscription.type = "Standard";
+            mollieSubscription.resource = createMollieSubscription.resource;
+            mollieSubscription.sequenceType = createMollieSubscription.sequenceType;
+            mollieSubscription.metadata = createMollieSubscription.metadata;
+            mollieSubscription.method = createMollieSubscription.method;
+            mollieSubscription.description = createMollieSubscription.description;
+            mollieSubscription.amount = createMollieSubscription.amount;
+            mollieSubscription.times = createMollieSubscription.times;
+            mollieSubscription.timesRemaining =
                 createMollieSubscription.timesRemaining;
-            mijnMenuSubscription.interval = createMollieSubscription.interval;
-            mijnMenuSubscription.startDate = createMollieSubscription.startDate;
-            mijnMenuSubscription.nextPaymentDate =
+            mollieSubscription.interval = createMollieSubscription.interval;
+            mollieSubscription.startDate = createMollieSubscription.startDate;
+            mollieSubscription.nextPaymentDate =
                 createMollieSubscription.nextPaymentDate;
-            mijnMenuSubscription.createdAt = createMollieSubscription.createdAt;
-            mijnMenuSubscription.recordCreatedAt = new Date();
+            mollieSubscription.createdAt = createMollieSubscription.createdAt;
+            mollieSubscription.recordCreatedAt = new Date();
 
-            await mijnMenuSubscription.save();
+            await mollieSubscription.save();
 
             let updatedData = {};
             updatedData["status"] = paymentRequest.status;
@@ -323,7 +323,7 @@ module.exports = function (
             updatedData["method"] = paymentRequest.method;
             updatedData["paidAt"] = paymentRequest.paidAt;
 
-            let updateMijnMenuSubscriptionPayment = await MollieSubscription.findOneAndUpdate(
+            let updateInvestlySubscriptionPayment = await MollieSubscription.findOneAndUpdate(
                 {
                     paymentId: paymentRequest.id,
                 },
@@ -335,14 +335,14 @@ module.exports = function (
                 }
             );
 
-            if (!updateMijnMenuSubscriptionPayment) {
+            if (!updateInvestlySubscriptionPayment) {
                 return res.error("Could not update Investly Subscription");
             }
 
             let user = User.findByIdAndUpdate(
                 userId,
                 {
-                    $set: { MijnMenuStandard: true, EmailVerified: true },
+                    $set: { verified: true },
                 },
                 { new: true }
             )
@@ -390,29 +390,29 @@ module.exports = function (
                 return res.error("Unable to get payment request or you did not pay");
             }
 
-            let mijnMenuSubscription = new MijnMenuSubscriptions();
-            mijnMenuSubscription._id = mongoose.mongo.ObjectId();
-            mijnMenuSubscription.status = subscription.status;
-            mijnMenuSubscription.customerId = subscription.customerId;
-            mijnMenuSubscription.profileId = subscription.profileId;
-            mijnMenuSubscription.subscriptionId = subscriptionId;
-            mijnMenuSubscription.mandateId = mollieSubscription.mandateId;
+            let mollieSubscription = new MollieSubscription();
+            mollieSubscription._id = mongoose.mongo.ObjectId();
+            mollieSubscription.status = subscription.status;
+            mollieSubscription.customerId = subscription.customerId;
+            mollieSubscription.profileId = subscription.profileId;
+            mollieSubscription.subscriptionId = subscriptionId;
+            mollieSubscription.mandateId = mollieSubscription.mandateId;
 
-            mijnMenuSubscription.type = subscription.type;
-            mijnMenuSubscription.resource = mollieSubscription.resource;
-            mijnMenuSubscription.sequenceType = subscription.sequenceType;
-            mijnMenuSubscription.metadata = mollieSubscription.metadata;
-            mijnMenuSubscription.method = subscription.method;
-            mijnMenuSubscription.description = mollieSubscription.description;
-            mijnMenuSubscription.amount = mollieSubscription.amount;
-            mijnMenuSubscription.times = mollieSubscription.times;
-            mijnMenuSubscription.timesRemaining = mollieSubscription.timesRemaining;
-            mijnMenuSubscription.interval = mollieSubscription.interval;
-            mijnMenuSubscription.startDate = mollieSubscription.startDate;
-            mijnMenuSubscription.nextPaymentDate = mollieSubscription.nextPaymentDate;
-            mijnMenuSubscription.createdAt = mollieSubscription.createdAt;
+            mollieSubscription.type = subscription.type;
+            mollieSubscription.resource = mollieSubscription.resource;
+            mollieSubscription.sequenceType = subscription.sequenceType;
+            mollieSubscription.metadata = mollieSubscription.metadata;
+            mollieSubscription.method = subscription.method;
+            mollieSubscription.description = mollieSubscription.description;
+            mollieSubscription.amount = mollieSubscription.amount;
+            mollieSubscription.times = mollieSubscription.times;
+            mollieSubscription.timesRemaining = mollieSubscription.timesRemaining;
+            mollieSubscription.interval = mollieSubscription.interval;
+            mollieSubscription.startDate = mollieSubscription.startDate;
+            mollieSubscription.nextPaymentDate = mollieSubscription.nextPaymentDate;
+            mollieSubscription.createdAt = mollieSubscription.createdAt;
 
-            await mijnMenuSubscription.save();
+            await mollieSubscription.save();
 
             return res.success({});
         } catch (e) {

@@ -8,6 +8,7 @@ const userSchema = new Schema({
   password: { type: String },
   email: { type: String, unique: true },
   plan: { type: String },
+  verified: { type: Boolean },
   mollie_customerId: { type: String },
 });
 
