@@ -1,6 +1,8 @@
 const express = require('express')
 require('./db/mongoose.connect') // Connect to DB
 
+const bodyParser = require("body-parser");
+
 const portfolioRouter = require('./routers/portfolio.router');
 const VerifyToken = require('./auth/VerifyToken').VerifyToken;
 
@@ -18,6 +20,16 @@ const app = express();
 
 const cors = require('cors');
 app.use(cors());
+
+
+// create application/json parser
+var jsonParser = bodyParser.json({ limit: "50mb", extended: true });
+
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ limit: "50mb", extended: true });
+
+app.use(jsonParser);
+app.use(urlencodedParser);
 
 app.use(express.json())
 app.use(portfolioRouter)
