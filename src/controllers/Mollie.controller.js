@@ -253,7 +253,7 @@ module.exports = function (
                 );
             }
 
-            let payment = await MijnMenuSubscriptions.find({
+            let payment = await MollieSubscription.find({
                 paymentId: paymentRequest.id,
             })
                 .lean()
@@ -336,7 +336,7 @@ module.exports = function (
             );
 
             if (!updateMijnMenuSubscriptionPayment) {
-                return res.error("Could not update Mijn Menu Subscription");
+                return res.error("Could not update Investly Subscription");
             }
 
             let user = User.findByIdAndUpdate(
@@ -364,7 +364,7 @@ module.exports = function (
 
     /**
      * Handle webhook url Recurring payment
-     * Called by Mollie to store a new Mijn Menu Standard or Plus payment
+     * Called by Mollie to store a new Investly Standard payment
      */
     app.post("/api/investly/subscription/webhook", async (req, res) => {
         try {
@@ -445,7 +445,7 @@ module.exports = function (
 
 
     /**
-     * get Mijn Menu Standard Subscription
+     * get Investly Standard Subscription
      * @param {*} customerId
      * @param {*} subscriptionId
      */
@@ -467,7 +467,7 @@ module.exports = function (
     };
 
     /**
-     * get Mandate details of customer - Mijn Menu Standard
+     * get Mandate details of customer - Investly Standard
      * @param {*} customerId
      * @param {*} mandateId
      */
@@ -489,7 +489,7 @@ module.exports = function (
     };
 
     /**
-     * Create Mijn Menu Standard Subscription
+     * Create Investly Standard Subscription
      * @param {*} customerId
      * @param {*} requestObject
      */
@@ -507,7 +507,7 @@ module.exports = function (
     };
 
     /**
-     * Delete Subscription Payment - Mijn Menu Standard
+     * Delete Subscription Payment - Investly Standard
      * @param {*} molliePaymentId
      */
     const cancelSubscription = async (customerId, subscriptionId) => {
