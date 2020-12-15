@@ -62,7 +62,7 @@ module.exports = function (
                 }
             });
 
-            console.log(test);
+            console.log('test: ', test);
 
             let userOrders = await Transaction.find({ user_id: userId })
                 .limit(limit)
