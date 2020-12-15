@@ -16,7 +16,7 @@ const transactionSchema = new Schema({
     transaction_date: { type: Date }
 });
 
-mySchema.plugin(aggregatePaginate);
+transactionSchema.plugin(aggregatePaginate);
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
