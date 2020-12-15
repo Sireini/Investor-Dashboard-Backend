@@ -52,18 +52,8 @@ module.exports = function (
             let page = Number(req.params.page);
             let limit = Number(req.params.limit);
 
-            console.log(typeof limit);
             let aggregrateQuery = Transaction.aggregate([{ $match: { user_id: userId } }]);
-
-            let userOrders = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit }).lean().exec();
-
-            console.log('test: ', userOrders);
-
-            // let userOrders = await Transaction.find({ user_id: userId })
-            //     .limit(limit)
-            //     .lean()
-            //     .exec();
-
+            let userOrders = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit });
 
             if (!userOrders.docs) {
                 return res.error('Unable to find user.')
