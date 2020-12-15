@@ -69,10 +69,11 @@ module.exports = function (
             //     .lean()
             //     .exec();
 
-            if (!userOrders) {
+
+            if (!userOrders.docs) {
                 return res.error('Unable to find user.')
             }
-            for (const order of userOrders) {
+            for (const order of userOrders.docs) {
                 if (order.asset_category === 'Crypto') {
                     let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
                     let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
