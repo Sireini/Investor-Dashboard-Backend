@@ -54,7 +54,7 @@ module.exports = function (
 
             console.log(typeof limit);
             let aggregrateQuery = Transaction.aggregate();
-            let test = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit }, (err, res) => {
+            let userOrders = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit }, (err, res) => {
                 if (err) {
                     console.log(err);
                 } else {
@@ -62,12 +62,12 @@ module.exports = function (
                 }
             });
 
-            console.log('test: ', test);
+            // console.log('test: ', test);
 
-            let userOrders = await Transaction.find({ user_id: userId })
-                .limit(limit)
-                .lean()
-                .exec();
+            // let userOrders = await Transaction.find({ user_id: userId })
+            //     .limit(limit)
+            //     .lean()
+            //     .exec();
 
             if (!userOrders) {
                 return res.error('Unable to find user.')
