@@ -53,7 +53,7 @@ module.exports = function (
             let limit = Number(req.params.limit);
 
             console.log(typeof limit);
-            let aggregrateQuery = Transaction.aggregate();
+            let aggregrateQuery = Transaction.aggregate([{ $match: { user_id: userId } }]);
             let userOrders = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit }, (err, res) => {
                 if (err) {
                     console.log(err);
