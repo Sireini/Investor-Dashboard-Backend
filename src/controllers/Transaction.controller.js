@@ -55,7 +55,7 @@ module.exports = function (
             console.log(typeof limit);
             let aggregrateQuery = Transaction.aggregate([{ $match: { user_id: userId } }]);
 
-            let userOrders = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit });
+            let userOrders = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit }).lean().exec();
 
             console.log('test: ', userOrders);
 
