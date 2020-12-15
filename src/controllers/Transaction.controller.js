@@ -46,17 +46,17 @@ module.exports = function (
     });
 
 
-    app.get("/api/transaction/list/:limit/:page", VerifyToken, async (req, res) => {
+    app.get("/api/transaction/list/:page/:limit", VerifyToken, async (req, res) => {
         try {
             let userId = req.userId;
-            let limit = Number(req.params.limit);
             let page = Number(req.params.page);
+            let limit = Number(req.params.limit);
 
             console.log(typeof limit);
             let aggregrateQuery = Transaction.aggregate();
             let test = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit }, (err, res) => {
                 if (err) {
-                    console.err(err);
+                    console.log(err);
                 } else {
                     return res.json(res);
                 }
