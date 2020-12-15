@@ -81,7 +81,7 @@ module.exports = function (
                 let webhookUrl =
                     "https://investly.nl/api/investly-standard/" + subscriptionPlan + "/payment/" + req.body.UserId;
 
-                let redirectUrl = "https://investly.nl/dashboard/login?customerId=" + customerId;
+                let redirectUrl = "https://investly.nl/dashboard/auth/login?customerId=" + customerId;
                 // let redirectUrl = "https://investly.nl/dashboard/";
 
                 if (!customerId) {
@@ -252,12 +252,16 @@ module.exports = function (
                 return res.error("Sorry unable to find userpayment");
             }
 
+            let date = new Date();
+            let startDate = new Date(date.setMonth(date.getMonth() + 1));
+
             let requestData = {
                 "amount[currency]": "EUR",
                 "amount[value]": subscriptionAmount,
                 interval: subscriptionInterval,
                 metadata: { UserId: userId, Type: "Standard" },
                 mandateId: mandate.id,
+                startDate: startDate,
                 description:
                     `Investly Standard - ${subscriptionPlan} Subscription - ` +
                     paymentRequest.customerId,
