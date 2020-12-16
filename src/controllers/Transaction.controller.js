@@ -78,12 +78,14 @@ module.exports = function (
         try {
             let userId = req.userId;
             let searchTerm = req.params.searchTerm;
+            console.log(searchTerm);
 
             let transactions = await Transaction.aggregate(
                 [
                   {
                     $match: { user_id: userId},
                     $match: {
+                        user_id: userId,
                         $or: [
                           { name: { $regex: searchTerm, $options: "i" } },
                           { symbol: { $regex: searchTerm, $options: "i" } },
