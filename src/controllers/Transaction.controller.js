@@ -46,7 +46,7 @@ module.exports = function (
     });
 
 
-    app.get("/api/transaction/list/:page/:limit/:filterType", VerifyToken, async (req, res) => {
+    app.get("/api/transaction/list/:page/:limit/:filterType?", VerifyToken, async (req, res) => {
         try {
             let userId = req.userId;
             let page = Number(req.params.page);
