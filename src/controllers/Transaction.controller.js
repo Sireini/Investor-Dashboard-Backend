@@ -83,7 +83,6 @@ module.exports = function (
             let transactions = await Transaction.aggregate(
                 [
                   {
-                    $match: { user_id: userId},
                     $match: {
                         user_id: userId,
                         $or: [
