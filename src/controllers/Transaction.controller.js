@@ -123,7 +123,8 @@ module.exports = function (
     });
 
     const getLatestPrice = async (userTransactions) => {
-
+        console.log('userTransactions', userTransactions);
+        
         for (const order of userTransactions) {
             if (order.asset_category === 'Crypto') {
                 let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
