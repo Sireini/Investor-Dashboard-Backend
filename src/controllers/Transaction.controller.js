@@ -77,15 +77,16 @@ module.exports = function (
     app.get("/api/transaction/:searchTerm", VerifyToken, async (req, res) => {
         try {
             let userId = req.userId;
-            let filterType = req.params.searchTerm;
+            let searchTerm = req.params.searchTerm;
 
             let transactions = await Transaction.aggregate(
                 [
                   {
-                    $match: { 
+                    $match: {
+                        user_id: userId,
                         $or: [
-                          { name: { $regex: _searchItem, $options: "i" } },
-                          { symbol: { $regex: _searchItem, $options: "i" } },
+                          { name: { $regex: searchTerm, $options: "i" } },
+                          { symbol: { $regex: searchTerm, $options: "i" } },
                         ]
                     },
                   },
