@@ -54,7 +54,7 @@ module.exports = function (
             let filterType = req.params.filterType
 
             let matchQuery = { user_id: userId };
-            if(filterType){
+            if(filterType && filterType !== 'All'){
                 matchQuery['asset_category'] = filterType;
             }
 
