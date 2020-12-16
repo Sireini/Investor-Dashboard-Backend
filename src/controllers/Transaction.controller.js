@@ -121,7 +121,7 @@ module.exports = function (
         }
     });
 
-    const getLatestPrice = (userTransactions) => {
+    const getLatestPrice = async (userTransactions) => {
 
         for (const order of userTransactions) {
             if (order.asset_category === 'Crypto') {
