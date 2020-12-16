@@ -64,9 +64,10 @@ module.exports = function (
             if (!userOrders.docs) {
                 return res.error('Unable to find user.')
             }
+            getLatestPrice(userOrders.docs);
             console.log('userOrders 1', userOrders);
-            userOrders = getLatestPrice(userOrders.docs);
-            console.log('userOrders 2', userOrders);
+            // userOrders = getLatestPrice(userOrders.docs);
+            // console.log('userOrders 2', userOrders);
 
             // for (const order of userOrders.docs) {
             //     if (order.asset_category === 'Crypto') {
