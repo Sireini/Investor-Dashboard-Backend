@@ -82,8 +82,8 @@ module.exports = function (
             let transactions = await Transaction.aggregate(
                 [
                   {
+                    $match: { user_id: userId},
                     $match: {
-                        user_id: userId,
                         $or: [
                           { name: { $regex: searchTerm, $options: "i" } },
                           { symbol: { $regex: searchTerm, $options: "i" } },
@@ -91,6 +91,8 @@ module.exports = function (
                     },
                   },
                 ]);
+
+                console.log(transactions)
             
             if (!transactions) {
                 return res.error('Unable to find user.')
