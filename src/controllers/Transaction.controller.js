@@ -66,7 +66,7 @@ module.exports = function (
             }
             // await getLatestPrice(userOrders.docs);
             console.log('userOrders 1', userOrders);
-            userOrders = await getLatestPrice(userOrders.docs);
+            userOrders.docs = await getLatestPrice(userOrders.docs);
             console.log('userOrders 2', userOrders);
 
             // for (const order of userOrders.docs) {
