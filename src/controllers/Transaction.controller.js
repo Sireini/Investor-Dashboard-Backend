@@ -74,7 +74,7 @@ module.exports = function (
         }
     });
 
-    app.get("/api/transaction/:searchTerm", VerifyToken, async (req, res) => {
+    app.get("/api/transaction/search/:searchTerm", VerifyToken, async (req, res) => {
         try {
             let userId = req.userId;
             let searchTerm = req.params.searchTerm;
