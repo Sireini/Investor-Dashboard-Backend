@@ -65,9 +65,9 @@ module.exports = function (
                 return res.error('Unable to find user.')
             }
             console.log('userOrders 1', userOrders);
-            let userOrders = getLatestPrice(userOrders.docs);
+            userOrders = getLatestPrice(userOrders.docs);
             console.log('userOrders 2', userOrders);
-            
+
             // for (const order of userOrders.docs) {
             //     if (order.asset_category === 'Crypto') {
             //         let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
