@@ -124,7 +124,7 @@ module.exports = function (
 
     const getLatestPrice = async (userTransactions) => {
         console.log('userTransactions', userTransactions);
-        
+
         for (const order of userTransactions) {
             if (order.asset_category === 'Crypto') {
                 let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
@@ -150,7 +150,7 @@ module.exports = function (
                 order.change_percentage = (order.current_total_avg_value - order.transaction_value) / order.transaction_value * 100;
             }
         }
-
+        console.log(userTransactions)
         return userTransactions;
     }
 
