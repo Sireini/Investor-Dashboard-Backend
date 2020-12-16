@@ -46,18 +46,26 @@ module.exports = function (
     });
 
 
-    app.get("/api/transaction/list/:page/:limit", VerifyToken, async (req, res) => {
+    app.get("/api/transaction/list/:page/:limit/:filterType", VerifyToken, async (req, res) => {
         try {
             let userId = req.userId;
             let page = Number(req.params.page);
             let limit = Number(req.params.limit);
+            let filterType = req.params.filterType
 
-            let aggregrateQuery = Transaction.aggregate([{ $match: { user_id: userId } }]);
+            let matchQuery = { user_id: userId };
+            if(filterType){
+                matchQuery['asset_category'] = filterType;
+            }
+
+            let aggregrateQuery = Transaction.aggregate([{ $match: matchQuery }]);
             let userOrders = await Transaction.aggregatePaginate(aggregrateQuery, { page: page, limit: limit });
+            console.log('userOrders', userOrders);
 
             if (!userOrders.docs) {
                 return res.error('Unable to find user.')
             }
+
             for (const order of userOrders.docs) {
                 if (order.asset_category === 'Crypto') {
                     let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
