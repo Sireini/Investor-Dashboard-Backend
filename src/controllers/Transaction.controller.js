@@ -99,7 +99,7 @@ module.exports = function (
                 return res.error('Unable to find user.')
             }
 
-            transactions = getLatestPrice(transactions);
+            transactions = await getLatestPrice(transactions);
 
             console.log('transactions', transactions);
             return res.success(transactions);
