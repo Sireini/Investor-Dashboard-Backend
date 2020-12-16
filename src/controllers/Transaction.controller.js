@@ -93,7 +93,7 @@ module.exports = function (
                   },
                 ]);
 
-                console.log(transactions)
+            console.log('transactions', transactions);
             
             if (!transactions) {
                 return res.error('Unable to find user.')
@@ -101,6 +101,7 @@ module.exports = function (
 
             transactions = getLatestPrice(transactions);
 
+            console.log('transactions', transactions);
             return res.success(transactions);
         } catch (error) {
             console.log(error)
