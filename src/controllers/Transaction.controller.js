@@ -64,10 +64,10 @@ module.exports = function (
             if (!userOrders.docs) {
                 return res.error('Unable to find user.')
             }
-            getLatestPrice(userOrders.docs);
+            // await getLatestPrice(userOrders.docs);
             console.log('userOrders 1', userOrders);
-            // userOrders = getLatestPrice(userOrders.docs);
-            // console.log('userOrders 2', userOrders);
+            userOrders = await getLatestPrice(userOrders.docs);
+            console.log('userOrders 2', userOrders);
 
             // for (const order of userOrders.docs) {
             //     if (order.asset_category === 'Crypto') {
@@ -123,7 +123,7 @@ module.exports = function (
     });
 
     const getLatestPrice = async (userTransactions) => {
-        console.log('userTransactions', userTransactions);
+        // console.log('userTransactions', userTransactions);
 
         for (const order of userTransactions) {
             if (order.asset_category === 'Crypto') {
@@ -150,7 +150,7 @@ module.exports = function (
                 order.change_percentage = (order.current_total_avg_value - order.transaction_value) / order.transaction_value * 100;
             }
         }
-        console.log(userTransactions)
+        // console.log(userTransactions)
         return userTransactions;
     }
 
