@@ -65,7 +65,7 @@ module.exports = function (
                 return res.error('Unable to find user.')
             }
 
-            userOrders.docs = await getLatestPrice(userOrders.docs);
+            userOrders.docs = await getLatestPriceAndSetAssetStyling(userOrders.docs);
 
             return res.success(userOrders);
         } catch (error) {
@@ -92,16 +92,13 @@ module.exports = function (
                     },
                   },
                 ]);
-
-            console.log('transactions', transactions);
             
             if (!transactions) {
                 return res.error('Unable to find user.')
             }
 
-            transactions = await getLatestPrice(transactions);
+            transactions = await getLatestPriceAndSetAssetStyling(transactions);
 
-            console.log('transactions', transactions);
             return res.success(transactions);
         } catch (error) {
             console.log(error)
@@ -109,23 +106,32 @@ module.exports = function (
         }
     });
 
-    const getLatestPrice = async (userTransactions) => {
+    const getLatestPriceAndSetAssetStyling = async (userTransactions) => {
         // console.log('userTransactions', userTransactions);
+        const total = 0;
 
-        for (const order of userTransactions) {
-            if (order.asset_category === 'Crypto') {
-                let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
-                let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
+        for (const transaction of userTransactions) {
+            if (transaction.asset_category === 'Crypto') {
+                let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: transaction.symbol });
+                let quote = latestCryptoPrice.data[transaction.symbol].quote['USD'];
 
-                order.current_total_avg_value = Number(quote.price) * order.amount;
-                order.change_percentage = (order.current_total_avg_value - order.transaction_value) / order.transaction_value * 100;
-            } else if (order.asset_category === 'Commodity') {
-                let latestCommodityPrice = await FMPController.getLatestCommodityPrice(order.symbol);
+                transaction.current_total_avg_value = Number(quote.price) * transaction.amount;
+                transaction.change_percentage = (transaction.current_total_avg_value - transaction.transaction_value) / transaction.transaction_value * 100;
 
-                order.current_total_avg_value = latestCommodityPrice[0].price * order.amount;
-                order.change_percentage = (order.current_total_avg_value - order.transaction_value) / order.transaction_value * 100;
+                transaction.icon_url_path = 'Shopping/Bitcoin.svg';
+                transaction.icon_color = 'svg-icon-warning';
+                transaction.symbol_background = 'symbol-light-warning';
+            } else if (transaction.asset_category === 'Commodity') {
+                let latestCommodityPrice = await FMPController.getLatestCommodityPrice(transaction.symbol);
+
+                transaction.current_total_avg_value = latestCommodityPrice[0].price * transaction.amount;
+                transaction.change_percentage = (transaction.current_total_avg_value - transaction.transaction_value) / transaction.transaction_value * 100;
+
+                transaction.icon_url_path = 'Design/Sketch.svg';
+                transaction.icon_color = 'svg-icon-primary';
+                transaction.symbol_background = 'symbol-light-primary';
             } else {
-                let latestStockPrice = await YahooFinanceController.getLatestStockPrice(order.symbol);
+                let latestStockPrice = await YahooFinanceController.getLatestStockPrice(transaction.symbol);
 
                 if (latestStockPrice.Information) {
                     console.log('Exceeding limit', latestStockPrice);
@@ -133,11 +139,24 @@ module.exports = function (
                     // return;
                 }
 
-                order.current_total_avg_value = latestStockPrice.price.regularMarketPrice * order.amount;
-                order.change_percentage = (order.current_total_avg_value - order.transaction_value) / order.transaction_value * 100;
+                transaction.current_total_avg_value = latestStockPrice.price.regularMarketPrice * transaction.amount;
+                transaction.change_percentage = (transaction.current_total_avg_value - transaction.transaction_value) / transaction.transaction_value * 100;
+
+                if(transaction.asset_category === 'ETF' || transaction.asset_category === 'Equity') {
+                    transaction.icon_url_path = 'Shopping/Chart-line1.svg';
+                    transaction.icon_color = 'svg-icon-danger';
+                    transaction.symbol_background = 'symbol-light-danger';
+                }
+
+                if(transaction.asset_category === 'Currency') {
+                    transaction.icon_url_path = 'Shopping/Dollar.svg';
+                    transaction.icon_color = 'svg-icon-success';
+                    transaction.symbol_background = 'symbol-light-success';
+                }
             }
+            
+            total += transaction.current_total_avg_value;
         }
-        // console.log(userTransactions)
         return userTransactions;
     }
 
