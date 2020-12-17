@@ -54,6 +54,10 @@ module.exports = function (
                     crypto.current_total_avg_value += Number(quote.price) * order.amount;
                     crypto.total_assets += 1;
                     crypto.change_percentage = (crypto.current_total_avg_value - crypto.total_avg_value) / crypto.total_avg_value * 100;
+                    
+                    crypto.icon_url_path = 'Shopping/Bitcoin.svg';
+                    crypto.icon_color = 'svg-icon-warning';
+                    crypto.symbol_background = 'symbol-light-warning';
 
                     crypto.assets.push(order);
                 } else if (order.asset_category === 'Commodity') {
@@ -67,6 +71,11 @@ module.exports = function (
                     category.current_total_avg_value += latestCommodityPrice[0].price * order.amount;
                     category.total_assets += 1;
                     category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
+
+                    category.icon_url_path = 'Design/Sketch.svg';
+                    category.icon_color = 'svg-icon-primary';
+                    category.symbol_background = 'symbol-light-primary';
+
                     category.assets.push(order);
                 } else {
                     let latestStockPrice = await YahooFinanceController.getLatestStockPrice(order.symbol);
@@ -84,6 +93,20 @@ module.exports = function (
                     category.current_total_avg_value += latestStockPrice.price.regularMarketPrice * order.amount;
                     category.total_assets += 1;
                     category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
+
+                    
+                    if(category.name === 'ETF' || transaction.name === 'Equity') {
+                        transaction.icon_url_path = 'Shopping/Chart-line1.svg';
+                        transaction.icon_color = 'svg-icon-danger';
+                        transaction.symbol_background = 'symbol-light-danger';
+                    }
+
+                    if(transaction.name === 'Currency') {
+                        transaction.icon_url_path = 'Shopping/Dollar.svg';
+                        transaction.icon_color = 'svg-icon-success';
+                        transaction.symbol_background = 'symbol-light-success';
+                    }
+
                     category.assets.push(order);
                 }
 
