@@ -108,7 +108,7 @@ module.exports = function (
 
     const getLatestPriceAndSetAssetStyling = async (userTransactions) => {
         // console.log('userTransactions', userTransactions);
-        const total = 0;
+        let total = 0;
 
         for (const transaction of userTransactions) {
             if (transaction.asset_category === 'Crypto') {
