@@ -95,16 +95,16 @@ module.exports = function (
                     category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
 
                     
-                    if(category.name === 'ETF' || transaction.name === 'Equity') {
-                        transaction.icon_url_path = 'Shopping/Chart-line1.svg';
-                        transaction.icon_color = 'svg-icon-danger';
-                        transaction.symbol_background = 'symbol-light-danger';
+                    if(category.name === 'ETF' || category.name === 'Equity') {
+                        category.icon_url_path = 'Shopping/Chart-line1.svg';
+                        category.icon_color = 'svg-icon-danger';
+                        category.symbol_background = 'symbol-light-danger';
                     }
 
-                    if(transaction.name === 'Currency') {
-                        transaction.icon_url_path = 'Shopping/Dollar.svg';
-                        transaction.icon_color = 'svg-icon-success';
-                        transaction.symbol_background = 'symbol-light-success';
+                    if(category.name === 'Currency') {
+                        category.icon_url_path = 'Shopping/Dollar.svg';
+                        category.icon_color = 'svg-icon-success';
+                        category.symbol_background = 'symbol-light-success';
                     }
 
                     category.assets.push(order);
