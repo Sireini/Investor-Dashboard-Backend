@@ -240,7 +240,6 @@ module.exports = function (
                         date = year + '-' + month + '-' + dt;
                         return dailyPriceObj[date] = dayPrice;
                     });
-                    console.log('dailyPriceObj', dailyPriceObj)
                     assetData.push({ [order.symbol]: dailyPriceObj });
 
                 } else if (order.asset_category === 'Equity' || order.asset_category === 'ETF') {
