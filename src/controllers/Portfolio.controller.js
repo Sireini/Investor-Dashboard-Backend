@@ -171,7 +171,7 @@ module.exports = function (
 
                     const today = moment().startOf('day');
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
-
+                    console.log()
                     dailyPrices = dailyPrices.map(dayPrice => {
                         dayPrice.current_total_avg_value = 0;
                         dayPrice.change_percentage = 0;
@@ -202,7 +202,7 @@ module.exports = function (
 
                         date = year + '-' + month + '-' + dt
 
-                        console.log(date, dayPrice.date)
+                        console.log(date, dayPrice.date, dayPrice)
                         // console.log(dayPrice.date)
                         return dayPrice;
                         // return { [date]: dayPrice };
