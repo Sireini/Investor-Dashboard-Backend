@@ -206,7 +206,7 @@ module.exports = function (
 
                         // return dayPrice;
                         // console.log(date = { dayPrice })
-                        return  [date] = { dayPrice };
+                        return  { [date]: dayPrice };
                     });
                     console.log('daily Crypto Price', dailyPrices);
 
@@ -273,7 +273,7 @@ module.exports = function (
 
                             return obj;
                         }, {});
-                    // console.log('filtered', filtered)
+                    console.log('filtered', filtered)
                     assetData.push({ [order.symbol]: filtered });
                 }
             };
@@ -290,14 +290,14 @@ module.exports = function (
                 // For all dates
                 for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
-                    console.log('companyTicker', companyTicker);
+                    // console.log('companyTicker', companyTicker);
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
                         let month = data[companyTicker][date];
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
-                        console.log('month', month);
+                        // console.log('month', month);
                     }
 
                 }
