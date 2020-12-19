@@ -187,7 +187,7 @@ module.exports = function (
                         dayPrice.amount = order.amount;
 
                         // const date = dayPrice.date.slice(0, 10);
-                        let date = new Date('2013-08-03T02:00:00Z');
+                        let date = new Date(dayPrice.date);
                         let year = date.getFullYear();
                         let month = date.getMonth()+1;
                         let dt = date.getDate();
