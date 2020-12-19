@@ -165,13 +165,23 @@ module.exports = function (
                     // crypto.assets.push(order);
                     let dailyPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', '2020-01-01', '2020-12-31');
 
-                    console.log('daily Crypto Price', dailyPrices);
 
                     let total_avg_value = 0;
                     total_avg_value += order.price * order.amount;
 
-                    // const today = moment().startOf('day');
-                    // const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
+                    const today = moment().startOf('day');
+                    const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
+
+                    dailyPrices = dailyPrices.map(dayPrice => {                        
+                        dayPrice.total_avg_value = total_avg_value;
+                        dayPrice.price = Number(dayPrice['adjClose']);
+                        dayPrice.current_total_avg_value += dayPrice.price * order.amount;
+                        dayPrice.change_percentage = (dayPrice.current_total_avg_value - total_avg_value) / total_avg_value * 100;
+
+                        dayPrice.change_value = dayPrice.current_total_avg_value - total_avg_value;
+                        dayPrice.amount = order.amount;
+                    });
+                    console.log('daily Crypto Price', dailyPrices);
 
                     // const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
                     //     // .filter(key => key >= moment(query.transaction_date['$gte']).format('YYYY-MM-DD') && key <= moment(query.transaction_date['$lte']).format('YYYY-MM-DD'))
