@@ -148,7 +148,78 @@ module.exports = function (
             for (const order of userOrders) {
                 //@TO DO Handle all other assets.
 
-                if (order.asset_category === 'Equity' || order.asset_category === 'ETF') {
+                if (order.asset_category === 'Crypto') {
+                    // let crypto = assets[indexNew];
+                    // let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
+                    // let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
+
+                    // crypto.total_avg_value += order.price * order.amount;
+                    // crypto.current_total_avg_value += Number(quote.price) * order.amount;
+                    // crypto.total_assets += 1;
+                    // crypto.change_percentage = (crypto.current_total_avg_value - crypto.total_avg_value) / crypto.total_avg_value * 100;
+                    
+                    // crypto.icon_url_path = 'Shopping/Bitcoin.svg';
+                    // crypto.icon_color = 'svg-icon-warning';
+                    // crypto.symbol_background = 'symbol-light-warning';
+
+                    // crypto.assets.push(order);
+                    let dailyPrices = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
+
+                    console.log('daily Crypto Price', dailyPrices);
+
+                    let total_avg_value = 0;
+                    total_avg_value += order.price * order.amount;
+
+                    // const today = moment().startOf('day');
+                    // const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
+
+                    // const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
+                    //     // .filter(key => key >= moment(query.transaction_date['$gte']).format('YYYY-MM-DD') && key <= moment(query.transaction_date['$lte']).format('YYYY-MM-DD'))
+                    //     .filter(key => key >= $gte.format('YYYY-MM-DD') && key <= today.format('YYYY-MM-DD'))
+                    //     .reduce((obj, key) => {
+                    //         obj[key] = dailyPrices['Time Series (Daily)'][key];
+
+                    //         if (!dates.includes(key)) {
+                    //             dates.push(key);
+                    //         }
+
+                    //         obj[key].total_avg_value = 0;
+                    //         obj[key].current_total_avg_value = 0;
+                    //         obj[key].change_percentage = 0;
+                    //         obj[key].change_value = 0;
+                    //         obj[key].price = 0;
+                    //         obj[key].amount = 0;
+
+                    //         if (key >= moment(order.transaction_date).format('YYYY-MM-DD')) {
+                    //             obj[key].total_avg_value = total_avg_value;
+                    //             obj[key].price = Number(obj[key]['4. close']);
+                    //             obj[key].current_total_avg_value += obj[key].price * order.amount;
+                    //             obj[key].change_percentage = (obj[key].current_total_avg_value - total_avg_value) / total_avg_value * 100;
+
+                    //             obj[key].change_value = obj[key].current_total_avg_value - total_avg_value;
+                    //             obj[key].amount = order.amount;
+                    //         }
+
+                    //         return obj;
+                    //     }, {});
+
+                    // assetData.push({ [order.symbol]: filtered });
+
+                } else if (order.asset_category === 'Commodity') {
+
+                    // let latestCommodityPrice = await FMPController.getLatestCommodityPrice(order.symbol);
+                    // let category = assets[indexNew];
+
+                    // category.total_avg_value += order.price * order.amount;
+                    // category.total_avg_value.toFixed(2);
+
+                    // category.current_total_avg_value += latestCommodityPrice[0].price * order.amount;
+                    // category.total_assets += 1;
+                    // category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
+
+                    // category.assets.push(order);
+
+                } else if (order.asset_category === 'Equity' || order.asset_category === 'ETF') {
                     //@TO DO get current price of the stock user has bought.
                     //@TO DO do not get double stock data.
                     let outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
