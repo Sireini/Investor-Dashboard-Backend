@@ -209,8 +209,6 @@ module.exports = function (
                         // console.log(date = { dayPrice })
                         return dailyPriceObj[date] = dayPrice;
                     });
-                    console.log('test', test);
-                    console.log('daily Crypto Price', dailyPrices);
 
                     assetData.push({ [order.symbol]: dailyPriceObj });
 
