@@ -180,6 +180,7 @@ module.exports = function (
 
                         dayPrice.change_value = dayPrice.current_total_avg_value - total_avg_value;
                         dayPrice.amount = order.amount;
+                        return dayPrice;
                     });
                     console.log('daily Crypto Price', dailyPrices);
 
