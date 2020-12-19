@@ -187,9 +187,10 @@ module.exports = function (
                         dayPrice.amount = order.amount;
 
                         // const date = dayPrice.date.slice(0, 10);
-                        console.log(dayPrice.date, typeof dayPrice.date)
-
-                        return { [date]: dayPrice };
+                        // console.log(dayPrice.date, typeof dayPrice.date)
+                        console.log(dayPrice)
+                        return dayPrice;
+                        // return { [date]: dayPrice };
                     });
                     console.log('daily Crypto Price', dailyPrices);
 
