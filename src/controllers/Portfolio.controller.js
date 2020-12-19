@@ -205,6 +205,7 @@ module.exports = function (
                         date = year + '-' + month + '-' + dt;
 
                         // return dayPrice;
+                        console.log({ [date]: dayPrice })
                         return { [date]: dayPrice };
                     });
                     console.log('daily Crypto Price', dailyPrices);
