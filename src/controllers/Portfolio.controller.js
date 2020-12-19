@@ -186,7 +186,8 @@ module.exports = function (
                         dayPrice.change_value = dayPrice.current_total_avg_value - total_avg_value;
                         dayPrice.amount = order.amount;
 
-                        const date = dayPrice.date.slice(0, 10);
+                        // const date = dayPrice.date.slice(0, 10);
+                        console.log(dayPrice.date, typeof dayPrice.date)
 
                         return { [date]: dayPrice };
                     });
