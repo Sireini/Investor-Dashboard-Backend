@@ -172,9 +172,14 @@ module.exports = function (
                     const today = moment().startOf('day');
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
 
-                    dailyPrices = dailyPrices.map(dayPrice => {                        
+                    dailyPrices = dailyPrices.map(dayPrice => {
+                        dayPrice.current_total_avg_value = 0;
+                        dayPrice.change_percentage = 0;
+                        dayPrice.change_value = 0;
+
                         dayPrice.total_avg_value = total_avg_value;
                         dayPrice.price = Number(dayPrice['adjClose']);
+                        
                         dayPrice.current_total_avg_value += dayPrice.price * order.amount;
                         dayPrice.change_percentage = (dayPrice.current_total_avg_value - total_avg_value) / total_avg_value * 100;
 
