@@ -252,14 +252,14 @@ module.exports = function (
 
                             return obj;
                         }, {});
-                    console.log('filtered', filtered)
+                    // console.log('filtered', filtered)
                     assetData.push({ [order.symbol]: filtered });
                 }
             };
 
             let response = [];
 
-            console.log('assetData', assetData['BTC'], dates);
+            // console.log('assetData', assetData['BTC'], dates);
 
             for (let date of dates) {
                 // Monthly for everything
