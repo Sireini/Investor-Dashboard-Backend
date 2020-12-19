@@ -174,8 +174,8 @@ module.exports = function (
                     
                     console.log('dailyPrices', dailyPrices);
 
-                    let test = {};
-                    dailyPrices = dailyPrices.map(dayPrice => {
+                    let dailyPriceObj = {};
+                    dailyPrices.forEach(dayPrice => {
                         dayPrice.current_total_avg_value = 0;
                         dayPrice.change_percentage = 0;
                         dayPrice.change_value = 0;
@@ -207,12 +207,12 @@ module.exports = function (
 
                         // return dayPrice;
                         // console.log(date = { dayPrice })
-                        return  test[date] = dayPrice;
+                        return dailyPriceObj[date] = dayPrice;
                     });
                     console.log('test', test);
                     console.log('daily Crypto Price', dailyPrices);
 
-                    assetData.push({ [order.symbol]: dailyPrices });
+                    assetData.push({ [order.symbol]: dailyPriceObj });
 
                 } else if (order.asset_category === 'Commodity') {
 
@@ -275,6 +275,7 @@ module.exports = function (
 
                             return obj;
                         }, {});
+
                     assetData.push({ [order.symbol]: filtered });
                 }
             };
