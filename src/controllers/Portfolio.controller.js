@@ -187,7 +187,22 @@ module.exports = function (
                         dayPrice.amount = order.amount;
 
                         // const date = dayPrice.date.slice(0, 10);
-                        console.log(dayPrice.date.toISOString(), typeof dayPrice.date)
+                        let date = new Date('2013-08-03T02:00:00Z');
+                        let year = date.getFullYear();
+                        let month = date.getMonth()+1;
+                        let dt = date.getDate();
+
+                        if (dt < 10) {
+                            dt = '0' + dt;
+                        }
+                        
+                        if (month < 10) {
+                            month = '0' + month;
+                        }
+
+                        date = year + '-' + month + '-' + dt
+
+                        console.log(date, typeof dayPrice.date)
                         // console.log(dayPrice.date)
                         return dayPrice;
                         // return { [date]: dayPrice };
