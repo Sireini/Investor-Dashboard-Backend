@@ -163,7 +163,7 @@ module.exports = function (
                     // crypto.symbol_background = 'symbol-light-warning';
 
                     // crypto.assets.push(order);
-                    let dailyPrices = await CoinmarketcapController.getDailyCryptoPrices({ symbol: order.symbol });
+                    let dailyPrices = await AlphavantageController.getDailyCryptoPrices({ symbol: order.symbol });
 
                     console.log('daily Crypto Price', dailyPrices);
 
