@@ -163,7 +163,7 @@ module.exports = function (
                     // crypto.symbol_background = 'symbol-light-warning';
 
                     // crypto.assets.push(order);
-                    let dailyPrices = await YahooFinanceController.getHistoricalData('BTC-USD', '2020-01-01', '2020-12-31');
+                    let dailyPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', '2020-01-01', '2020-12-31');
 
                     console.log('daily Crypto Price', dailyPrices);
 
