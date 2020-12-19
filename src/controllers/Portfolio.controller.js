@@ -174,6 +174,7 @@ module.exports = function (
                     
                     console.log('dailyPrices', dailyPrices);
 
+                    let test = {};
                     dailyPrices = dailyPrices.map(dayPrice => {
                         dayPrice.current_total_avg_value = 0;
                         dayPrice.change_percentage = 0;
@@ -206,8 +207,9 @@ module.exports = function (
 
                         // return dayPrice;
                         // console.log(date = { dayPrice })
-                        return  { [date]: dayPrice };
+                        return  test[date] = dayPrice;
                     });
+                    console.log('test', test);
                     console.log('daily Crypto Price', dailyPrices);
 
                     assetData.push({ [order.symbol]: dailyPrices });
@@ -273,7 +275,6 @@ module.exports = function (
 
                             return obj;
                         }, {});
-                    console.log('filtered', filtered)
                     assetData.push({ [order.symbol]: filtered });
                 }
             };
