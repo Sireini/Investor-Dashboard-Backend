@@ -163,7 +163,7 @@ module.exports = function (
                     // crypto.symbol_background = 'symbol-light-warning';
 
                     // crypto.assets.push(order);
-                    let dailyPrices = await AlphavantageController.getDailyCryptoPrices('USD', order.symbol);
+                    let dailyPrices = await AlphavantageController.getHistoricalData(order.symbol, '2020-01-01', '2020-12-31');
 
                     console.log('daily Crypto Price', dailyPrices);
 

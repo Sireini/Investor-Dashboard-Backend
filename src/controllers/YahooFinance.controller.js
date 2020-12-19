@@ -53,6 +53,20 @@ module.exports.getLatestStockPrice = async (ticker) => {
     });
 };
 
+module.exports.getHistoricalData = async (ticker, startDate, endDate) => {
+  if (!ticker || !startDate || !endDate) {
+    return null;
+  }
+
+  return await yahooFinance.historical({symbol: ticker, modules: ['price']})
+    .then((res) => res)
+    .catch((err) => {
+        // Handle the error
+        console.log(err);
+        return res.error(e);
+    });
+}
+
 var makeRequest = (options) => {
   let request = require("request");
   return new Promise((resolve, reject) => {
