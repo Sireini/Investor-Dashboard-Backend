@@ -149,22 +149,8 @@ module.exports = function (
                 //@TO DO Handle all other assets.
 
                 if (order.asset_category === 'Crypto') {
-                    // let crypto = assets[indexNew];
-                    // let latestCryptoPrice = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
-                    // let quote = latestCryptoPrice.data[order.symbol].quote['USD'];
-
-                    // crypto.total_avg_value += order.price * order.amount;
-                    // crypto.current_total_avg_value += Number(quote.price) * order.amount;
-                    // crypto.total_assets += 1;
-                    // crypto.change_percentage = (crypto.current_total_avg_value - crypto.total_avg_value) / crypto.total_avg_value * 100;
-                    
-                    // crypto.icon_url_path = 'Shopping/Bitcoin.svg';
-                    // crypto.icon_color = 'svg-icon-warning';
-                    // crypto.symbol_background = 'symbol-light-warning';
-
-                    // crypto.assets.push(order);
-                    let dailyPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', '2020-01-01', '2020-12-31');
-
+                    //@TO DO startDate & endDate
+                    let dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', '2020-01-01', '2020-12-31');
 
                     let total_avg_value = 0;
                     total_avg_value += order.price * order.amount;
@@ -172,10 +158,9 @@ module.exports = function (
                     const today = moment().startOf('day');
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
                     
-                    console.log('dailyPrices', dailyPrices);
-
                     let dailyPriceObj = {};
-                    dailyPrices.forEach(dayPrice => {
+
+                    dailyHistoricalPrices.forEach(dayPrice => {
                         dayPrice.current_total_avg_value = 0;
                         dayPrice.change_percentage = 0;
                         dayPrice.change_value = 0;
@@ -189,7 +174,6 @@ module.exports = function (
                         dayPrice.change_value = dayPrice.current_total_avg_value - total_avg_value;
                         dayPrice.amount = order.amount;
 
-                        // const date = dayPrice.date.slice(0, 10);
                         let date = new Date(dayPrice.date);
                         let year = date.getFullYear();
                         let month = date.getMonth() + 1 ;
@@ -204,9 +188,6 @@ module.exports = function (
                         }
 
                         date = year + '-' + month + '-' + dt;
-
-                        // return dayPrice;
-                        // console.log(date = { dayPrice })
                         return dailyPriceObj[date] = dayPrice;
                     });
 
@@ -214,7 +195,12 @@ module.exports = function (
 
                 } else if (order.asset_category === 'Commodity') {
 
-                    // let latestCommodityPrice = await FMPController.getLatestCommodityPrice(order.symbol);
+                    let dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, '2020-01-01', '2020-12-31');
+                    
+                    let total_avg_value = 0;
+                    total_avg_value += order.price * order.amount;
+
+                    console.log('commodities ', dailyHistoricalPrices)
                     // let category = assets[indexNew];
 
                     // category.total_avg_value += order.price * order.amount;

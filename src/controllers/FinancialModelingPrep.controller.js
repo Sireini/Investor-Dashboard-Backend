@@ -53,6 +53,21 @@ module.exports.getLatestCommodityPrice = async (ticker) => {
     });
 };
 
+
+module.exports.getHistoricalData = async (ticker, startDate, endDate) => {
+  if (!ticker || !startDate || !endDate) {
+    return null;
+  }
+
+  return await fmp.commodities.history(ticker, {startDate, endDate})
+    .then((res) => res)
+    .catch((err) => {
+        // Handle the error
+        console.log(err);
+        return res.error(e);
+    });
+};
+
 var makeRequest = (options) => {
   let request = require("request");
   return new Promise((resolve, reject) => {
