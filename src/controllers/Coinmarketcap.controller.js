@@ -43,7 +43,7 @@ module.exports = function (app, VerifyToken) {
 
 
 /**
- * @Get list of cryptocurrencies based on symbols
+ * @Get latest cryptocurrencies price based on symbols
  */
 module.exports.getLatestCryptoPrice = async (queryParams) => {
   if (!queryParams) {
@@ -70,7 +70,6 @@ module.exports.getLatestCryptoPrice = async (queryParams) => {
 
   return cryptoList;
 };
-
 
 var makeRequest = (options) => {
     let request = require("request");

@@ -163,7 +163,7 @@ module.exports = function (
                     // crypto.symbol_background = 'symbol-light-warning';
 
                     // crypto.assets.push(order);
-                    let dailyPrices = await CoinmarketcapController.getLatestCryptoPrice({ symbol: order.symbol });
+                    let dailyPrices = await CoinmarketcapController.getDailyCryptoPrices({ symbol: order.symbol });
 
                     console.log('daily Crypto Price', dailyPrices);
 
@@ -223,7 +223,7 @@ module.exports = function (
                     //@TO DO get current price of the stock user has bought.
                     //@TO DO do not get double stock data.
                     let outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
-                    let dailyPrices = await AlphavantageController.getDailyPrices(order.symbol, outputSize);
+                    let dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
 
                     if (!dailyPrices['Time Series (Daily)']) {
                         return;

@@ -103,7 +103,7 @@ module.exports = function (app, VerifyToken) {
     }
   );
 
-  module.exports.getDailyPrices = async (ticker, outputSize) => {
+  module.exports.getDailyStockPrices = async (ticker, outputSize) => {
     if (!ticker) {
       return null;
     }
@@ -131,13 +131,27 @@ module.exports = function (app, VerifyToken) {
       });
   };
 
-  
   module.exports.getLatestStockPrice = async (ticker) => {
     if (!ticker) {
       return null;
     }
 
     return await alpha.stocks.quote(ticker, {"datatype" : 'json'})
+      .then((res) => res)
+      .catch((err) => {
+          // Handle the error
+          console.log(err);
+          return res.error(e);
+      });
+  };
+
+  
+  module.exports.getDailyCryptoPrices = async (baseCurrency, ticker) => {
+    if (!ticker) {
+      return null;
+    }
+
+    return await alpha.crypto.daily(baseCurrency, ticker, {"datatype" : 'json'})
       .then((res) => res)
       .catch((err) => {
           // Handle the error
