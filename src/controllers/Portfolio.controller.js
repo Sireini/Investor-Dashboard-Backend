@@ -187,8 +187,8 @@ module.exports = function (
                         dayPrice.amount = order.amount;
 
                         // const date = dayPrice.date.slice(0, 10);
-                        // console.log(dayPrice.date, typeof dayPrice.date)
-                        console.log(dayPrice.date)
+                        console.log(dayPrice.date, typeof dayPrice.date)
+                        // console.log(dayPrice.date)
                         return dayPrice;
                         // return { [date]: dayPrice };
                     });
