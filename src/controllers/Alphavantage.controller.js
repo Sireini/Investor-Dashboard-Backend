@@ -146,12 +146,12 @@ module.exports = function (app, VerifyToken) {
   };
 
   
-  module.exports.getDailyCryptoPrices = async (baseCurrency, ticker) => {
+  module.exports.getDailyCryptoPrices = async (ticker, baseCurrency) => {
     if (!ticker) {
       return null;
     }
 
-    return await alpha.crypto.daily(baseCurrency, ticker, {"datatype" : 'json'})
+    return await alpha.crypto.daily(ticker, baseCurrency, {"datatype" : 'json'})
       .then((res) => res)
       .catch((err) => {
           // Handle the error
