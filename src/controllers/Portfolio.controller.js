@@ -189,37 +189,7 @@ module.exports = function (
                     });
                     console.log('daily Crypto Price', dailyPrices);
 
-                    // const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
-                    //     // .filter(key => key >= moment(query.transaction_date['$gte']).format('YYYY-MM-DD') && key <= moment(query.transaction_date['$lte']).format('YYYY-MM-DD'))
-                    //     .filter(key => key >= $gte.format('YYYY-MM-DD') && key <= today.format('YYYY-MM-DD'))
-                    //     .reduce((obj, key) => {
-                    //         obj[key] = dailyPrices['Time Series (Daily)'][key];
-
-                    //         if (!dates.includes(key)) {
-                    //             dates.push(key);
-                    //         }
-
-                    //         obj[key].total_avg_value = 0;
-                    //         obj[key].current_total_avg_value = 0;
-                    //         obj[key].change_percentage = 0;
-                    //         obj[key].change_value = 0;
-                    //         obj[key].price = 0;
-                    //         obj[key].amount = 0;
-
-                    //         if (key >= moment(order.transaction_date).format('YYYY-MM-DD')) {
-                    //             obj[key].total_avg_value = total_avg_value;
-                    //             obj[key].price = Number(obj[key]['4. close']);
-                    //             obj[key].current_total_avg_value += obj[key].price * order.amount;
-                    //             obj[key].change_percentage = (obj[key].current_total_avg_value - total_avg_value) / total_avg_value * 100;
-
-                    //             obj[key].change_value = obj[key].current_total_avg_value - total_avg_value;
-                    //             obj[key].amount = order.amount;
-                    //         }
-
-                    //         return obj;
-                    //     }, {});
-
-                    // assetData.push({ [order.symbol]: filtered });
+                    assetData.push({ [order.symbol]: dailyPrices });
 
                 } else if (order.asset_category === 'Commodity') {
 
@@ -289,6 +259,8 @@ module.exports = function (
 
             let response = [];
 
+            console.log('assetData', assetData);
+            
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
@@ -297,13 +269,16 @@ module.exports = function (
                 // For all dates
                 for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
+                    console.log('companyTicker', companyTicker);
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
                         let month = data[companyTicker][date];
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
+                        console.log('month', month);
                     }
+
                 }
 
                 response.push({
