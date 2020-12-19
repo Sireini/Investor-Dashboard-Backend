@@ -58,7 +58,7 @@ module.exports.getHistoricalData = async (ticker, startDate, endDate) => {
     return null;
   }
 
-  return await yahooFinance.historical({symbol: ticker, modules: ['price']})
+  return await yahooFinance.historical({symbol: ticker, from: startDate, to: endDate})
     .then((res) => res)
     .catch((err) => {
         // Handle the error
