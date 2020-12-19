@@ -189,7 +189,7 @@ module.exports = function (
                         // const date = dayPrice.date.slice(0, 10);
                         let date = new Date(dayPrice.date);
                         let year = date.getFullYear();
-                        let month = date.getMonth()+1;
+                        let month = date.getMonth() + 1 ;
                         let dt = date.getDate();
 
                         if (dt < 10) {
@@ -202,12 +202,12 @@ module.exports = function (
 
                         date = year + '-' + month + '-' + dt
 
-                        console.log(date, typeof dayPrice.date)
+                        console.log(date, dayPrice.date)
                         // console.log(dayPrice.date)
                         return dayPrice;
                         // return { [date]: dayPrice };
                     });
-                    console.log('daily Crypto Price', dailyPrices);
+                    // console.log('daily Crypto Price', dailyPrices);
 
                     assetData.push({ [order.symbol]: dailyPrices });
 
