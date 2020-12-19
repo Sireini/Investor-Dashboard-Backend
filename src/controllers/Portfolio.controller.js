@@ -1,3 +1,4 @@
+const { Console } = require('console');
 
 
 module.exports = function (
@@ -160,6 +161,7 @@ module.exports = function (
                     
                     let dailyPriceObj = {};
 
+                    // @TO DO REDUCE DUPLICATED CODE
                     dailyHistoricalPrices.forEach(dayPrice => {
                         dayPrice.current_total_avg_value = 0;
                         dayPrice.change_percentage = 0;
@@ -200,17 +202,46 @@ module.exports = function (
                     let total_avg_value = 0;
                     total_avg_value += order.price * order.amount;
 
-                    console.log('commodities ', dailyHistoricalPrices)
-                    // let category = assets[indexNew];
+                    console.log('commodities ', dailyHistoricalPrices);
+                    
+                    const today = moment().startOf('day');
+                    const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
+                    
+                    let dailyPriceObj = {};
 
-                    // category.total_avg_value += order.price * order.amount;
-                    // category.total_avg_value.toFixed(2);
+                    // @TO DO REDUCE DUPLICATED CODE
+                    dailyHistoricalPrices.historical.forEach(dayPrice => {
+                        dayPrice.current_total_avg_value = 0;
+                        dayPrice.change_percentage = 0;
+                        dayPrice.change_value = 0;
 
-                    // category.current_total_avg_value += latestCommodityPrice[0].price * order.amount;
-                    // category.total_assets += 1;
-                    // category.change_percentage = (category.current_total_avg_value - category.total_avg_value) / category.total_avg_value * 100
+                        dayPrice.total_avg_value = total_avg_value;
+                        dayPrice.price = Number(dayPrice['adjClose']);
+                        
+                        dayPrice.current_total_avg_value += dayPrice.price * order.amount;
+                        dayPrice.change_percentage = (dayPrice.current_total_avg_value - total_avg_value) / total_avg_value * 100;
 
-                    // category.assets.push(order);
+                        dayPrice.change_value = dayPrice.current_total_avg_value - total_avg_value;
+                        dayPrice.amount = order.amount;
+
+                        let date = new Date(dayPrice.date);
+                        let year = date.getFullYear();
+                        let month = date.getMonth() + 1 ;
+                        let dt = date.getDate();
+
+                        if (dt < 10) {
+                            dt = '0' + dt;
+                        }
+                        
+                        if (month < 10) {
+                            month = '0' + month;
+                        }
+
+                        date = year + '-' + month + '-' + dt;
+                        return dailyPriceObj[date] = dayPrice;
+                    });
+                    console.log('dailyPriceObj', dailyPriceObj)
+                    assetData.push({ [order.symbol]: dailyPriceObj });
 
                 } else if (order.asset_category === 'Equity' || order.asset_category === 'ETF') {
                     //@TO DO get current price of the stock user has bought.
