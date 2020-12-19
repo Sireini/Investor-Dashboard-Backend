@@ -202,14 +202,12 @@ module.exports = function (
                             month = '0' + month;
                         }
 
-                        date = year + '-' + month + '-' + dt
+                        date = year + '-' + month + '-' + dt;
 
-                        console.log(date, dayPrice.date, dayPrice)
-                        // console.log(dayPrice.date)
                         // return dayPrice;
                         return { [date]: dayPrice };
                     });
-                    // console.log('daily Crypto Price', dailyPrices);
+                    console.log('daily Crypto Price', dailyPrices);
 
                     assetData.push({ [order.symbol]: dailyPrices });
 
