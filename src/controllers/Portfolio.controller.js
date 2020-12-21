@@ -145,36 +145,27 @@ module.exports = function (
             if (!userOrders) {
                 return res.error('Unable to find user.')
             }
-
+                                        
+            const today = moment().startOf('day');
+            const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
+            console.log('order symbol: ', order.symbol);
+            
             for (const order of userOrders) {
                 //@TO DO Handle all other assets.
-
                 if (order.asset_category === 'Crypto') {
-                    //@TO DO Add period filter
-                    //@TO DO startDate & endDate
-                    let dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', '2020-01-01', '2020-12-31');
-
-                    const today = moment().startOf('day');
-                    const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
-                    
+                    const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', $gte, today);
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
                     assetData.push({ [order.symbol]: dailyPriceObj });
 
                 } else if (order.asset_category === 'Commodity') {
-                    //@TO DO Add period filter
-                    let dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, '2020-01-01', '2020-12-31');
-                                        
-                    const today = moment().startOf('day');
-                    const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
-                    
+                    const dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, $gte, today);
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
                     assetData.push({ [order.symbol]: dailyPriceObj });
 
                 } else if (order.asset_category === 'Equity' || order.asset_category === 'ETF') {
-                    //@TO DO get current price of the stock user has bought.
                     //@TO DO do not get double stock data.
-                    let outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
-                    let dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
+                    const outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
+                    const dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
 
                     if (!dailyPrices['Time Series (Daily)']) {
                         return;
@@ -182,11 +173,6 @@ module.exports = function (
 
                     let total_avg_value = 0;
                     total_avg_value += order.price * order.amount;
-
-                    const today = moment().startOf('day');
-                    const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
-
-                    console.log('$gte', $gte);
 
                     const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
                         // .filter(key => key >= moment(query.transaction_date['$gte']).format('YYYY-MM-DD') && key <= moment(query.transaction_date['$lte']).format('YYYY-MM-DD'))
