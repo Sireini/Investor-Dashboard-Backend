@@ -150,6 +150,7 @@ module.exports = function (
                 //@TO DO Handle all other assets.
 
                 if (order.asset_category === 'Crypto') {
+                    //@TO DO Add period filter
                     //@TO DO startDate & endDate
                     let dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', '2020-01-01', '2020-12-31');
 
@@ -161,7 +162,7 @@ module.exports = function (
                     
                     let dailyPriceObj = {};
 
-                    // @TO DO REDUCE DUPLICATED CODE
+                    //@TO DO REDUCE DUPLICATED CODE
                     dailyHistoricalPrices.forEach(dayPrice => {
                         dayPrice.current_total_avg_value = 0;
                         dayPrice.change_percentage = 0;
@@ -196,50 +197,49 @@ module.exports = function (
                     assetData.push({ [order.symbol]: dailyPriceObj });
 
                 } else if (order.asset_category === 'Commodity') {
-
+                    //@TO DO Add period filter
                     let dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, '2020-01-01', '2020-12-31');
                     
                     let total_avg_value = 0;
                     total_avg_value += order.price * order.amount;
-
-                    console.log('commodities ', dailyHistoricalPrices);
                     
                     const today = moment().startOf('day');
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
                     
-                    let dailyPriceObj = {};
+                    //@TO DO REDUCE DUPLICATED CODE
+                    const dailyPriceObj = calculateAssetChange(dailyHistoricalPrices.historical);
+                    console.log('dailyPriceObj', dailyPriceObj)
 
-                    // @TO DO REDUCE DUPLICATED CODE
-                    dailyHistoricalPrices.historical.forEach(dayPrice => {
-                        dayPrice.current_total_avg_value = 0;
-                        dayPrice.change_percentage = 0;
-                        dayPrice.change_value = 0;
+                    // dailyHistoricalPrices.historical.forEach(dayPrice => {
+                    //     dayPrice.current_total_avg_value = 0;
+                    //     dayPrice.change_percentage = 0;
+                    //     dayPrice.change_value = 0;
 
-                        dayPrice.total_avg_value = total_avg_value;
-                        dayPrice.price = Number(dayPrice['adjClose']);
+                    //     dayPrice.total_avg_value = total_avg_value;
+                    //     dayPrice.price = Number(dayPrice['adjClose']);
                         
-                        dayPrice.current_total_avg_value += dayPrice.price * order.amount;
-                        dayPrice.change_percentage = (dayPrice.current_total_avg_value - total_avg_value) / total_avg_value * 100;
+                    //     dayPrice.current_total_avg_value += dayPrice.price * order.amount;
+                    //     dayPrice.change_percentage = (dayPrice.current_total_avg_value - total_avg_value) / total_avg_value * 100;
 
-                        dayPrice.change_value = dayPrice.current_total_avg_value - total_avg_value;
-                        dayPrice.amount = order.amount;
+                    //     dayPrice.change_value = dayPrice.current_total_avg_value - total_avg_value;
+                    //     dayPrice.amount = order.amount;
 
-                        let date = new Date(dayPrice.date);
-                        let year = date.getFullYear();
-                        let month = date.getMonth() + 1 ;
-                        let dt = date.getDate();
+                    //     let date = new Date(dayPrice.date);
+                    //     let year = date.getFullYear();
+                    //     let month = date.getMonth() + 1 ;
+                    //     let dt = date.getDate();
 
-                        if (dt < 10) {
-                            dt = '0' + dt;
-                        }
+                    //     if (dt < 10) {
+                    //         dt = '0' + dt;
+                    //     }
                         
-                        if (month < 10) {
-                            month = '0' + month;
-                        }
+                    //     if (month < 10) {
+                    //         month = '0' + month;
+                    //     }
 
-                        date = year + '-' + month + '-' + dt;
-                        return dailyPriceObj[date] = dayPrice;
-                    });
+                    //     date = year + '-' + month + '-' + dt;
+                    //     return dailyPriceObj[date] = dayPrice;
+                    // });
                     assetData.push({ [order.symbol]: dailyPriceObj });
 
                 } else if (order.asset_category === 'Equity' || order.asset_category === 'ETF') {
@@ -257,8 +257,6 @@ module.exports = function (
 
                     const today = moment().startOf('day');
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
-
-                    // console.log(order, total_avg_value);
 
                     const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
                         // .filter(key => key >= moment(query.transaction_date['$gte']).format('YYYY-MM-DD') && key <= moment(query.transaction_date['$lte']).format('YYYY-MM-DD'))
@@ -296,8 +294,6 @@ module.exports = function (
 
             let response = [];
 
-            // console.log('assetData', assetData['BTC'], dates);
-
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
@@ -306,14 +302,12 @@ module.exports = function (
                 // For all dates
                 for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
-                    // console.log('companyTicker', companyTicker);
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
                         let month = data[companyTicker][date];
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
-                        // console.log('month', month);
                     }
 
                 }
@@ -359,6 +353,43 @@ module.exports = function (
             res.error("Something went wrong!");
         }
     });
+
+    var calculateAssetChange = async (asset) => {
+        let dailyPriceObj = {};
+
+        asset.forEach(dayPrice => {
+            dayPrice.current_total_avg_value = 0;
+            dayPrice.change_percentage = 0;
+            dayPrice.change_value = 0;
+
+            dayPrice.total_avg_value = total_avg_value;
+            dayPrice.price = Number(dayPrice['adjClose']);
+            
+            dayPrice.current_total_avg_value += dayPrice.price * order.amount;
+            dayPrice.change_percentage = (dayPrice.current_total_avg_value - total_avg_value) / total_avg_value * 100;
+
+            dayPrice.change_value = dayPrice.current_total_avg_value - total_avg_value;
+            dayPrice.amount = order.amount;
+
+            let date = new Date(dayPrice.date);
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1 ;
+            let dt = date.getDate();
+
+            if (dt < 10) {
+                dt = '0' + dt;
+            }
+            
+            if (month < 10) {
+                month = '0' + month;
+            }
+
+            date = year + '-' + month + '-' + dt;
+            return dailyPriceObj[date] = dayPrice;
+        });
+
+        return dailyPriceObj;
+    }
 
     var determinePortfolioBalanceQuery = async (period) => {
         const today = moment().startOf('day');
