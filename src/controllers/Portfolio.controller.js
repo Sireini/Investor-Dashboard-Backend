@@ -150,8 +150,6 @@ module.exports = function (
             const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
             
             for (const order of userOrders) {
-                console.log('order symbol: ', order.symbol);
-                //@TO DO Handle all other assets.
                 if (order.asset_category === 'Crypto') {
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
@@ -161,61 +159,17 @@ module.exports = function (
                     const dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
                     assetData.push({ [order.symbol]: dailyPriceObj });
-
-                } else if (order.asset_category === 'Equity' || order.asset_category === 'ETF') {
-                    //@TO DO do not get double stock data.
-                    const outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
-                    const dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
-                    const latestStockPrice = await YahooFinanceController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
-                    // const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
-                    // assetData.push({ [order.symbol]: dailyPriceObj });
-                    console.log('latestStockPrice', latestStockPrice);
-
-                    if (!dailyPrices['Time Series (Daily)']) {
-                        return;
-                    }
-
-                    let total_avg_value = 0;
-                    total_avg_value += order.price * order.amount;
-
-                    const filtered = Object.keys(dailyPrices['Time Series (Daily)'])
-                        // .filter(key => key >= moment(query.transaction_date['$gte']).format('YYYY-MM-DD') && key <= moment(query.transaction_date['$lte']).format('YYYY-MM-DD'))
-                        .filter(key => key >= $gte.format('YYYY-MM-DD') && key <= today.format('YYYY-MM-DD'))
-                        .reduce((obj, key) => {
-                            obj[key] = dailyPrices['Time Series (Daily)'][key];
-
-                            if (!dates.includes(key)) {
-                                dates.push(key);
-                            }
-
-                            obj[key].total_avg_value = 0;
-                            obj[key].current_total_avg_value = 0;
-                            obj[key].change_percentage = 0;
-                            obj[key].change_value = 0;
-                            obj[key].price = 0;
-                            obj[key].amount = 0;
-
-                            if (key >= moment(order.transaction_date).format('YYYY-MM-DD')) {
-                                obj[key].total_avg_value = total_avg_value;
-                                obj[key].price = Number(obj[key]['4. close']);
-                                obj[key].current_total_avg_value += obj[key].price * order.amount;
-                                obj[key].change_percentage = (obj[key].current_total_avg_value - total_avg_value) / total_avg_value * 100;
-
-                                obj[key].change_value = obj[key].current_total_avg_value - total_avg_value;
-                                obj[key].amount = order.amount;
-                            }
-
-                            return obj;
-                        }, {});
-
-                    assetData.push({ [order.symbol]: filtered });
                 } else {
+                    const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
+                    const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
+                    assetData.push({ [order.symbol]: dailyPriceObj });
 
                 }
             };
 
             let response = [];
 
+            Console.LOG('dates', dates)
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
