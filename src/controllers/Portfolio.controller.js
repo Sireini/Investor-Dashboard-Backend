@@ -207,7 +207,7 @@ module.exports = function (
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
                     
                     //@TO DO REDUCE DUPLICATED CODE
-                    const dailyPriceObj = await calculateAssetChange(dailyHistoricalPrices.historical);
+                    const dailyPriceObj = await calculateAssetChange(total_avg_value, dailyHistoricalPrices.historical);
                     console.log('dailyPriceObj', dailyPriceObj)
 
                     // dailyHistoricalPrices.historical.forEach(dayPrice => {
@@ -354,7 +354,7 @@ module.exports = function (
         }
     });
 
-    var calculateAssetChange = async (asset) => {
+    var calculateAssetChange = async (total_avg_value, asset) => {
         let dailyPriceObj = {};
 
         asset.forEach(dayPrice => {
