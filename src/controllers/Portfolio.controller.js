@@ -153,12 +153,12 @@ module.exports = function (
                 console.log('order symbol: ', order.symbol);
                 //@TO DO Handle all other assets.
                 if (order.asset_category === 'Crypto') {
-                    const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', $gte, today);
+                    const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
                     assetData.push({ [order.symbol]: dailyPriceObj });
 
                 } else if (order.asset_category === 'Commodity') {
-                    const dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, $gte, today);
+                    const dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
                     assetData.push({ [order.symbol]: dailyPriceObj });
 
