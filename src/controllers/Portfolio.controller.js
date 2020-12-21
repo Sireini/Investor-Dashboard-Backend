@@ -207,7 +207,7 @@ module.exports = function (
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
                     
                     //@TO DO REDUCE DUPLICATED CODE
-                    const dailyPriceObj = calculateAssetChange(dailyHistoricalPrices.historical);
+                    const dailyPriceObj = await calculateAssetChange(dailyHistoricalPrices.historical);
                     console.log('dailyPriceObj', dailyPriceObj)
 
                     // dailyHistoricalPrices.historical.forEach(dayPrice => {
