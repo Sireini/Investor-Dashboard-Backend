@@ -166,7 +166,9 @@ module.exports = function (
                     //@TO DO do not get double stock data.
                     const outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
                     const dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
-                    const latestStockPrice = await YahooFinanceController.getLatestStockPrice(order.symbol);
+                    const latestStockPrice = await YahooFinanceController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
+                    // const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
+                    // assetData.push({ [order.symbol]: dailyPriceObj });
                     console.log('latestStockPrice', latestStockPrice);
 
                     if (!dailyPrices['Time Series (Daily)']) {
