@@ -200,14 +200,14 @@ module.exports = function (
                     //@TO DO Add period filter
                     let dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, '2020-01-01', '2020-12-31');
                     
-                    let total_avg_value = 0;
-                    total_avg_value += order.price * order.amount;
+                    // let total_avg_value = 0;
+                    // total_avg_value += order.price * order.amount;
                     
                     const today = moment().startOf('day');
                     const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
                     
                     //@TO DO REDUCE DUPLICATED CODE
-                    const dailyPriceObj = await calculateAssetChange(total_avg_value, dailyHistoricalPrices.historical);
+                    const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
                     console.log('dailyPriceObj', dailyPriceObj)
 
                     // dailyHistoricalPrices.historical.forEach(dayPrice => {
@@ -354,9 +354,11 @@ module.exports = function (
         }
     });
 
-    var calculateAssetChange = async (total_avg_value, asset) => {
-        console.log('calculateAssetChange', total_avg_value, asset)
+    var calculateAssetChange = async (order, asset) => {
+        console.log('calculateAssetChange', order, asset)
         let dailyPriceObj = {};
+        let total_avg_value = 0;
+        total_avg_value += order.price * order.amount;
 
         asset.forEach(dayPrice => {
             dayPrice.current_total_avg_value = 0;
