@@ -355,6 +355,7 @@ module.exports = function (
     });
 
     var calculateAssetChange = async (total_avg_value, asset) => {
+        console.log('calculateAssetChange', total_avg_value, asset)
         let dailyPriceObj = {};
 
         asset.forEach(dayPrice => {
