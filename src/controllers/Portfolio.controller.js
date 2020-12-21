@@ -208,7 +208,7 @@ module.exports = function (
                     
                     //@TO DO REDUCE DUPLICATED CODE
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
-                    console.log('dailyPriceObj', dailyPriceObj)
+                    console.log('dailyPriceObj', dailyPriceObj);
 
                     // dailyHistoricalPrices.historical.forEach(dayPrice => {
                     //     dayPrice.current_total_avg_value = 0;
@@ -355,7 +355,7 @@ module.exports = function (
     });
 
     var calculateAssetChange = async (order, asset) => {
-        console.log('calculateAssetChange', order, asset)
+        // console.log('calculateAssetChange', order, asset);
         let dailyPriceObj = {};
         let total_avg_value = 0;
         total_avg_value += order.price * order.amount;
