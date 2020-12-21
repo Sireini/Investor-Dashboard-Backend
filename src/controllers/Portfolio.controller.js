@@ -148,9 +148,9 @@ module.exports = function (
                                         
             const today = moment().startOf('day');
             const $gte = period !== 'ytd' ? moment(today).subtract(1, period + 's') : moment().startOf('year');
-            console.log('order symbol: ', order.symbol);
             
             for (const order of userOrders) {
+                console.log('order symbol: ', order.symbol);
                 //@TO DO Handle all other assets.
                 if (order.asset_category === 'Crypto') {
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', $gte, today);
