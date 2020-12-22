@@ -161,6 +161,7 @@ module.exports = function (
                 } else {
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
+                    console.log(dailyPriceObj.dates)
                     assetData.push({ [order.symbol]: dailyPriceObj });
                 }
             };
@@ -231,6 +232,7 @@ module.exports = function (
     });
 
     var calculateAssetChange = async (order, asset) => {
+        let dates = [];
         let dailyPriceObj = {};
         let total_avg_value = 0;
         total_avg_value += order.price * order.amount;
@@ -266,8 +268,13 @@ module.exports = function (
             dates.push(date);
             return dailyPriceObj[date] = dayPrice;
         });
+        
+        let result = {
+            dailyPriceObj,
+            dates
+        }
 
-        return dailyPriceObj;
+        return result;
     }
 
     var determinePortfolioBalanceQuery = async (period) => {
