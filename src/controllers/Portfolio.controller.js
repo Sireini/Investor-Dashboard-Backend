@@ -168,7 +168,7 @@ module.exports = function (
             };
 
             let response = [];
-
+            console.log('dates', dates)
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
