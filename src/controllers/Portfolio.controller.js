@@ -207,11 +207,11 @@ module.exports = function (
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
-                        let date = data[companyTicker][date];
-                        if(date) {
+                        let comapnyDate = data[companyTicker][date];
+                        if(comapnyDate) {
                             // console.log('date', date);
-                            total_avg_value += parseFloat(date.total_avg_value);
-                            total_change_value += parseFloat(date.change_value);
+                            total_avg_value += parseFloat(comapnyDate.total_avg_value);
+                            total_change_value += parseFloat(comapnyDate.change_value);
                         }
                     }
                 }
