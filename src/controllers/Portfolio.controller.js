@@ -187,15 +187,7 @@ module.exports = function (
                 }
             };
 
-            // console.log('assetData: ', assetData)
-
             let response = [];
-            let totalChangePercentage = 0;
-            let totalChangeValue = 0;
-
-            console.log(assetData['GLD'])
-
-            // console.log('dates',dates)
 
             for (let date of dates) {
                 // Monthly for everything
@@ -205,21 +197,17 @@ module.exports = function (
                 // For all dates
                 for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
-                    // console.log('companyTicker', data[companyTicker][date], date);
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
                         let companyDate = data[companyTicker][date];
                         if(companyDate) {
-                            // console.log('date', date);
                             total_avg_value += parseFloat(companyDate.total_avg_value);
                             total_change_value += parseFloat(companyDate.change_value);
-                            totalChangeValue += parseFloat(companyDate.change_value);
                         }
                     }
                 }
 
-                console.log('totalChangeValue', totalChangeValue)
                 response.push({
                     date: new Date(date).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" }),
                     total_avg_value: total_avg_value,
@@ -228,6 +216,11 @@ module.exports = function (
                     total_portfolio_balance: total_avg_value + total_change_value
                 });
             }
+
+            const firstItemValue = response[0].total_avg_value;
+            const lastItemValue = response[response.length - 1].total_avg_value;
+
+            console.log(firstItemValue, lastItemValue);
 
             return res.success({ labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), value: response.reverse() });
         } catch (error) {
