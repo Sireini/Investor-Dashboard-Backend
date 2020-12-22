@@ -217,8 +217,9 @@ module.exports = function (
                 });
             }
 
-            const firstItemValue = response[0].total_avg_value;
-            const lastItemValue = response[response.length - 1].total_avg_value;
+            let resp = response.reverse();
+            const firstItemValue = resp[0].total_avg_value;
+            const lastItemValue = resp[response.length - 1].total_avg_value;
 
             console.log(firstItemValue, lastItemValue);
 
