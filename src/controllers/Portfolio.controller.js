@@ -155,8 +155,9 @@ module.exports = function (
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
                     //@TO DO Delete duplicate dates = dailyPriceObj.dates;
                     
-                    // if(!dates.includes(date)) {
-                    // }
+                    if(!dates.length) {
+                        dates = dailyPriceObj.dates
+                    }
 
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
                 } else if (order.asset_category === 'Commodity') {
@@ -164,18 +165,24 @@ module.exports = function (
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
                     //@TO DO Delete duplicate dates = dailyPriceObj.dates;
                     // dates = dailyPriceObj.dates;
+                    if(!dates.length) {
+                        dates = dailyPriceObj.dates
+                    }
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
                 } else {
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
                     //@TO DO Delete duplicate dates = dailyPriceObj.dates;
                     // dates = dailyPriceObj.dates;
+                    if(!dates.length) {
+                        dates = dailyPriceObj.dates
+                    }
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
 
                     if(order.asset_category === 'Equity') {
-                        const outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
-                        const dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
-                        console.log('dailyPrices', dailyPrices)
+                        // const outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
+                        // const dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
+                        // console.log('dailyPrices', dailyPrices)
                     }
                 }
             };
