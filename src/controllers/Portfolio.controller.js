@@ -142,6 +142,7 @@ module.exports = function (
                 .lean()
                 .exec();
 
+            console.log('userOrders', userOrders)
             if (!userOrders) {
                 return res.error('Unable to find user.')
             }
@@ -154,7 +155,6 @@ module.exports = function (
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
                     assetData.push({ [order.symbol]: dailyPriceObj });
-
                 } else if (order.asset_category === 'Commodity') {
                     const dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
