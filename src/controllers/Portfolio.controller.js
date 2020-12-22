@@ -276,7 +276,9 @@ module.exports = function (
             }
 
             date = year + '-' + month + '-' + dt;
-            dates.push(date);
+            if(!dates.includes(date)) {
+                dates.push(date);
+            }
             return result[date] = dayPrice;
         });
         
