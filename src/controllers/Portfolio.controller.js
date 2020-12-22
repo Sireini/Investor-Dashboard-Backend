@@ -168,8 +168,9 @@ module.exports = function (
             };
 
             let response = [];
+            let totalChangePercentage = 0;
+            let totalChangeValue = 0;
 
-            Console.LOG('dates', dates)
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
@@ -184,6 +185,8 @@ module.exports = function (
                         let month = data[companyTicker][date];
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
+
+                        totalChangeValue += parseFloat(month.change_value);
                     }
 
                 }
@@ -196,6 +199,11 @@ module.exports = function (
                     total_portfolio_balance: total_avg_value + total_change_value
                 });
             }
+
+            console.log('totalChangeValue', totalChangeValue)
+            // totalChangePercentage = (totalChangeValue / )
+            // total_change_percentage: (total_change_value / total_avg_value) * 100,
+
 
             return res.success({ labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), value: response.reverse() });
         } catch (error) {
