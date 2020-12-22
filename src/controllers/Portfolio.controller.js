@@ -156,7 +156,6 @@ module.exports = function (
                     //@TO DO Delete duplicate dates = dailyPriceObj.dates;
                     
                     // if(!dates.includes(date)) {
-                        dates = dailyPriceObj.dates;
                     // }
 
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
@@ -172,6 +171,12 @@ module.exports = function (
                     //@TO DO Delete duplicate dates = dailyPriceObj.dates;
                     // dates = dailyPriceObj.dates;
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
+
+                    if(order.asset_category === 'Equity') {
+                        	
+                        const dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
+                        console.log('dailyPrices', dailyPrices)
+                    }
                 }
             };
 
@@ -191,15 +196,15 @@ module.exports = function (
                 // For all dates
                 for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
-                    console.log('companyTicker', data[companyTicker][date], date);
+                    // console.log('companyTicker', data[companyTicker][date], date);
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
-                        let month = data[companyTicker][date];
-                        if(month) {
-                            console.log('month', month);
-                            total_avg_value += parseFloat(month.total_avg_value);
-                            total_change_value += parseFloat(month.change_value);
+                        let date = data[companyTicker][date];
+                        if(date) {
+                            // console.log('date', date);
+                            total_avg_value += parseFloat(date.total_avg_value);
+                            total_change_value += parseFloat(date.change_value);
                         }
                     }
                 }
