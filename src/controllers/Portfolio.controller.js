@@ -163,12 +163,12 @@ module.exports = function (
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
                     assetData.push({ [order.symbol]: dailyPriceObj });
-
                 }
             };
 
+            console.log('assetData: ', assetData)
             let response = [];
-            console.log('dates', dates)
+            console.log('dates', dates);
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
