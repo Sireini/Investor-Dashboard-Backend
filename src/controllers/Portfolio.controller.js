@@ -190,6 +190,8 @@ module.exports = function (
             // console.log('assetData: ', assetData)
 
             let response = [];
+            let totalChangePercentage = 0;
+            let totalChangeValue = 0;
 
             console.log(assetData['GLD'])
 
@@ -212,10 +214,12 @@ module.exports = function (
                             // console.log('date', date);
                             total_avg_value += parseFloat(comapnyDate.total_avg_value);
                             total_change_value += parseFloat(comapnyDate.change_value);
+                            totalChangeValue += parseFloat(month.change_value);
                         }
                     }
                 }
 
+                console.log('totalChangeValue', totalChangeValue)
                 response.push({
                     date: new Date(date).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" }),
                     total_avg_value: total_avg_value,
