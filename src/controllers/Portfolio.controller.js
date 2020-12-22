@@ -169,7 +169,8 @@ module.exports = function (
 
             let response = [];
 
-            Console.LOG('dates', dates)
+            console.log('dates',dates)
+
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
@@ -262,6 +263,7 @@ module.exports = function (
             }
 
             date = year + '-' + month + '-' + dt;
+            dates.push(date);
             return dailyPriceObj[date] = dayPrice;
         });
 
