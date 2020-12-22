@@ -142,7 +142,6 @@ module.exports = function (
                 .lean()
                 .exec();
 
-            console.log('userOrders', userOrders)
             if (!userOrders) {
                 return res.error('Unable to find user.')
             }
@@ -167,8 +166,11 @@ module.exports = function (
             };
 
             console.log('assetData: ', assetData)
+
             let response = [];
+
             console.log('dates', dates);
+
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
@@ -184,7 +186,6 @@ module.exports = function (
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
                     }
-
                 }
 
                 response.push({
@@ -195,6 +196,8 @@ module.exports = function (
                     total_portfolio_balance: total_avg_value + total_change_value
                 });
             }
+
+            console.log('response', response)
 
             return res.success({ labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), value: response.reverse() });
         } catch (error) {
