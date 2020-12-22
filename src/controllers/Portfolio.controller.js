@@ -185,7 +185,7 @@ module.exports = function (
                 // For all dates
                 for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
-                    console.log('companyTicker', data, companyTicker);
+                    console.log('companyTicker', data[companyTicker], date);
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
