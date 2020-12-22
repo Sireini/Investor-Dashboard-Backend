@@ -186,7 +186,7 @@ module.exports = function (
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
 
-                        totalChangeValue += parseFloat(month.change_value);
+                        // totalChangeValue += parseFloat(month.change_value);
                     }
 
                 }
@@ -200,7 +200,7 @@ module.exports = function (
                 });
             }
 
-            console.log('totalChangeValue', totalChangeValue)
+            // console.log('totalChangeValue', totalChangeValue)
             // totalChangePercentage = (totalChangeValue / )
             // total_change_percentage: (total_change_value / total_avg_value) * 100,
 
