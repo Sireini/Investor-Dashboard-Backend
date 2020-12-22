@@ -171,11 +171,11 @@ module.exports = function (
                 }
             };
 
-            console.log('assetData: ', assetData)
+            // console.log('assetData: ', assetData)
 
             let response = [];
 
-            console.log('dates',dates)
+            // console.log('dates',dates)
 
             for (let date of dates) {
                 // Monthly for everything
@@ -185,6 +185,7 @@ module.exports = function (
                 // For all dates
                 for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
+                    console.log('companyTicker', companyTicker);
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
