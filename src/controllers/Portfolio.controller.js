@@ -153,16 +153,18 @@ module.exports = function (
                 if (order.asset_category === 'Crypto') {
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
-                    assetData.push({ [order.symbol]: dailyPriceObj });
+                    dates = dailyPriceObj.dates;
+                    assetData.push({ [order.symbol]: dailyPriceObj.result });
                 } else if (order.asset_category === 'Commodity') {
                     const dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
-                    assetData.push({ [order.symbol]: dailyPriceObj });
+                    dates = dailyPriceObj.dates;
+                    assetData.push({ [order.symbol]: dailyPriceObj.result });
                 } else {
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
-                    console.log(dailyPriceObj.dates)
-                    assetData.push({ [order.symbol]: dailyPriceObj });
+                    dates = dailyPriceObj.dates;
+                    assetData.push({ [order.symbol]: dailyPriceObj.result });
                 }
             };
 
@@ -233,7 +235,7 @@ module.exports = function (
 
     var calculateAssetChange = async (order, asset) => {
         let dates = [];
-        let dailyPriceObj = {};
+        let result = {};
         let total_avg_value = 0;
         total_avg_value += order.price * order.amount;
 
@@ -266,15 +268,15 @@ module.exports = function (
 
             date = year + '-' + month + '-' + dt;
             dates.push(date);
-            return dailyPriceObj[date] = dayPrice;
+            return result[date] = dayPrice;
         });
         
-        let result = {
-            dailyPriceObj,
+        let resultObj = {
+            result,
             dates
         }
 
-        return result;
+        return resultObj;
     }
 
     var determinePortfolioBalanceQuery = async (period) => {
