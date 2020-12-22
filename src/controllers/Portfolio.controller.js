@@ -173,7 +173,7 @@ module.exports = function (
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
 
                     if(order.asset_category === 'Equity') {
-                        	
+                        const outputSize = { outputsize: period === 'ytd' ? 'full' : 'compact' };
                         const dailyPrices = await AlphavantageController.getDailyStockPrices(order.symbol, outputSize);
                         console.log('dailyPrices', dailyPrices)
                     }
