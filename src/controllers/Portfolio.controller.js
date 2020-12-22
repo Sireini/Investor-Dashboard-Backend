@@ -169,8 +169,7 @@ module.exports = function (
 
             let response = [];
 
-            console.log('dates', dates);
-
+            Console.LOG('dates', dates)
             for (let date of dates) {
                 // Monthly for everything
                 let total_avg_value = 0;
@@ -196,8 +195,6 @@ module.exports = function (
                     total_portfolio_balance: total_avg_value + total_change_value
                 });
             }
-
-            console.log('response', response)
 
             return res.success({ labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), value: response.reverse() });
         } catch (error) {
