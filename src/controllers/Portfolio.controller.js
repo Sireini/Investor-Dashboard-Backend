@@ -175,6 +175,8 @@ module.exports = function (
 
             let response = [];
 
+            console.log(assetData['GLD'])
+
             // console.log('dates',dates)
 
             for (let date of dates) {
@@ -185,14 +187,16 @@ module.exports = function (
                 // For all dates
                 for (let data of assetData) {
                     let companyTicker = (Object.keys(data)[0]);
-                    console.log('companyTicker', data[companyTicker], date);
+                    console.log('companyTicker', data[companyTicker][date], date);
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
                         let month = data[companyTicker][date];
                         console.log('month', month);
-                        total_avg_value += parseFloat(month.total_avg_value);
-                        total_change_value += parseFloat(month.change_value);
+                        if(month) {
+                            total_avg_value += parseFloat(month.total_avg_value);
+                            total_change_value += parseFloat(month.change_value);
+                        }
                     }
                 }
 
