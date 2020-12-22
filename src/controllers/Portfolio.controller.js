@@ -209,12 +209,12 @@ module.exports = function (
 
                     // For all companies
                     if (data[companyTicker] !== undefined) {
-                        let comapnyDate = data[companyTicker][date];
-                        if(comapnyDate) {
+                        let companyDate = data[companyTicker][date];
+                        if(companyDate) {
                             // console.log('date', date);
-                            total_avg_value += parseFloat(comapnyDate.total_avg_value);
-                            total_change_value += parseFloat(comapnyDate.change_value);
-                            totalChangeValue += parseFloat(month.change_value);
+                            total_avg_value += parseFloat(companyDate.total_avg_value);
+                            total_change_value += parseFloat(companyDate.change_value);
+                            totalChangeValue += parseFloat(companyDate.change_value);
                         }
                     }
                 }
