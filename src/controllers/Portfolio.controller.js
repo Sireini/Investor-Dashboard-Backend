@@ -192,8 +192,8 @@ module.exports = function (
                     // For all companies
                     if (data[companyTicker] !== undefined) {
                         let month = data[companyTicker][date];
-                        console.log('month', month);
                         if(month) {
+                            console.log('month', month);
                             total_avg_value += parseFloat(month.total_avg_value);
                             total_change_value += parseFloat(month.change_value);
                         }
