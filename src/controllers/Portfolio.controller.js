@@ -153,16 +153,19 @@ module.exports = function (
                 if (order.asset_category === 'Crypto') {
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol + '-USD', $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
+                    //@TO DO Delete duplicate dates = dailyPriceObj.dates;
                     dates = dailyPriceObj.dates;
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
                 } else if (order.asset_category === 'Commodity') {
                     const dailyHistoricalPrices = await FMPController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices.historical);
+                    //@TO DO Delete duplicate dates = dailyPriceObj.dates;
                     dates = dailyPriceObj.dates;
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
                 } else {
                     const dailyHistoricalPrices = await YahooFinanceController.getHistoricalData(order.symbol, $gte.format('YYYY-MM-DD'), today.format('YYYY-MM-DD'));
                     const dailyPriceObj = await calculateAssetChange(order, dailyHistoricalPrices);
+                    //@TO DO Delete duplicate dates = dailyPriceObj.dates;
                     dates = dailyPriceObj.dates;
                     assetData.push({ [order.symbol]: dailyPriceObj.result });
                 }
@@ -186,6 +189,7 @@ module.exports = function (
                     // For all companies
                     if (data[companyTicker] !== undefined) {
                         let month = data[companyTicker][date];
+                        console.log('month', month);
                         total_avg_value += parseFloat(month.total_avg_value);
                         total_change_value += parseFloat(month.change_value);
                     }
