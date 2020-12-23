@@ -226,8 +226,8 @@ module.exports = function (
             return res.success({ 
                 labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), 
                 value: values, 
-                totalPortfolioChange: totalPortfolioChange, 
-                totalPortfolioChangePercentage: lastItem.total_change_percentage 
+                totalPortfolioChange: totalPortfolioChange.toFixed(2), 
+                totalPortfolioChangePercentage: lastItem.total_change_percentage.toFixed(2) 
             });
         } catch (error) {
             console.log(error)
