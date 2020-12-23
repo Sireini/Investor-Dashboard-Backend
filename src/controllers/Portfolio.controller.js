@@ -218,15 +218,16 @@ module.exports = function (
             }
 
             const values = response.reverse();
-            const firstItemValue = values[0].total_portfolio_balance;
-            const lastItemValue = values[values.length - 1].total_portfolio_balance;
-            const totalPortfolioChange = lastItemValue - firstItemValue;
+            const firstItem = values[0].total_portfolio_balance;
+            const lastItem = values[values.length - 1].total_portfolio_balance;
+            const totalPortfolioChange = lastItem - firstItem;
+            console.log(lastItem.total_change_percentage)
 
             return res.success({ 
                 labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), 
                 value: values, 
                 totalPortfolioChange: totalPortfolioChange, 
-                totalPortfolioChangePercentage: lastItemValue.total_change_percentage 
+                totalPortfolioChangePercentage: lastItem.total_change_percentage 
             });
         } catch (error) {
             console.log(error)
