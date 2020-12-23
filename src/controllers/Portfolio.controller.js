@@ -216,13 +216,14 @@ module.exports = function (
                     total_portfolio_balance: total_avg_value + total_change_value
                 });
             }
+            const values = response.reverse();
+            const firstItemValue = values[0].total_portfolio_balance;
+            const lastItemValue = values[values.length - 1].total_portfolio_balance;
+            const totalPortfolioChange = 
 
-            const firstItemValue = response[0].total_avg_value;
-            const lastItemValue = response[response.length - 1].total_avg_value;
+            console.log(firstItemValue, lastItemValue, values[0], values[values.length - 1]);
 
-            console.log(firstItemValue, lastItemValue, response[0], response[response.length - 1]);
-
-            return res.success({ labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), value: response.reverse() });
+            return res.success({ labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), value: values });
         } catch (error) {
             console.log(error)
             res.error("Something went wrong!");
