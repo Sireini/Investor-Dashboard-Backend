@@ -218,10 +218,10 @@ module.exports = function (
             }
 
             const values = response.reverse();
-            const firstItem = values[0].total_portfolio_balance;
-            const lastItem = values[values.length - 1].total_portfolio_balance;
-            const totalPortfolioChange = lastItem - firstItem;
-            console.log(lastItem.total_change_percentage)
+            const firstItem = values[0];
+            const lastItem = values[values.length - 1];
+            const totalPortfolioChange = lastItem.total_portfolio_balance - firstItem.total_portfolio_balance;
+            console.log(lastItem)
 
             return res.success({ 
                 labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), 
