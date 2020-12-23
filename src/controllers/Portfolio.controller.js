@@ -220,7 +220,7 @@ module.exports = function (
             const firstItemValue = response[0].total_avg_value;
             const lastItemValue = response[response.length - 1].total_avg_value;
 
-            console.log(firstItemValue, lastItemValue);
+            console.log(firstItemValue, lastItemValue, response[0], response[response.length - 1]);
 
             return res.success({ labels: dates.map(d => new Date(d).toLocaleString("en-us", { year: 'numeric', month: 'short', day: "2-digit" })).reverse(), value: response.reverse() });
         } catch (error) {
